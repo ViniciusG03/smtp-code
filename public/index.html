@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sistema de Mensagens para Pacientes</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <style>
+      .container {
+        max-width: 900px;
+        margin-top: 30px;
+      }
+      .card {
+        margin-bottom: 20px;
+      }
+      .btn-action {
+        margin-right: 5px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1 class="mb-4">Sistema de Mensagens para Pacientes</h1>
+
+      <div class="row">
+        <div class="col-md-5">
+          <div class="card">
+            <div class="card-header">
+              <h5 class="card-title mb-0">Cadastrar Novo Paciente</h5>
+            </div>
+            <div class="card-body">
+              <form id="patientForm">
+                <div class="mb-3">
+                  <label for="nome" class="form-label">Nome Completo *</label>
+                  <input type="text" class="form-control" id="nome" required />
+                </div>
+                <div class="mb-3">
+                  <label for="email" class="form-label">E-mail *</label>
+                  <input
+                    type="email"
+                    class="form-control"
+                    id="email"
+                    required
+                  />
+                </div>
+                <div class="mb-3">
+                  <label for="dataNascimento" class="form-label"
+                    >Data de Nascimento</label
+                  >
+                  <input type="date" class="form-control" id="dataNascimento" />
+                </div>
+                <div class="mb-3">
+                  <label for="telefone" class="form-label">Telefone</label>
+                  <input type="tel" class="form-control" id="telefone" />
+                </div>
+                <button type="submit" class="btn btn-primary">Cadastrar</button>
+                <button
+                  type="button"
+                  id="cancelEdit"
+                  class="btn btn-secondary d-none"
+                >
+                  Cancelar
+                </button>
+              </form>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <h5 class="card-title mb-0">Enviar Mensagem para Todos</h5>
+            </div>
+            <div class="card-body">
+              <form id="bulkMessageForm">
+                <div class="mb-3">
+                  <label for="bulkTemplate" class="form-label"
+                    >Modelo de Mensagem</label
+                  >
+                  <select class="form-select" id="bulkTemplate" required>
+                    <option value="">Selecione um modelo</option>
+                    <option value="lembreteConsulta">
+                      Lembrete de Consulta
+                    </option>
+                    <option value="resultadoExame">Resultado de Exame</option>
+                    <option value="aniversario">Aniversário</option>
+                    <option value="lembreteRetorno">Lembrete de Retorno</option>
+                    <option value="campanhaVacinacao">
+                      Campanha de Vacinação
+                    </option>
+                  </select>
+                </div>
+                <button type="submit" class="btn btn-warning">
+                  Enviar para Todos
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-7">
+          <div class="card">
+            <div
+              class="card-header d-flex justify-content-between align-items-center"
+            >
+              <h5 class="card-title mb-0">Lista de Pacientes</h5>
+              <button id="refreshList" class="btn btn-sm btn-outline-secondary">
+                <i class="bi bi-arrow-clockwise"></i> Atualizar
+              </button>
+            </div>
+            <div class="card-body">
+              <div class="table-responsive">
+                <table class="table table-striped">
+                  <thead>
+                    <tr>
+                      <th>Nome</th>
+                      <th>E-mail</th>
+                      <th>Telefone</th>
+                      <th>Ações</th>
+                    </tr>
+                  </thead>
+                  <tbody id="patientsList">
+                    <!-- Lista de pacientes será carregada aqui -->
+                  </tbody>
+                </table>
+              </div>
+              <div id="noPatients" class="alert alert-info d-none">
+                Nenhum paciente cadastrado.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal de Envio de Mensagem -->
+    <div class="modal fade" id="messageModal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Enviar Mensagem</h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <form id="messageForm">
+              <input type="hidden" id="patientId" />
+              <div class="mb-3">
+                <label for="messageTemplate" class="form-label"
+                  >Modelo de Mensagem</label
+                >
+                <select class="form-select" id="messageTemplate" required>
+                  <option value="">Selecione um modelo</option>
+                  <option value="lembreteConsulta">Lembrete de Consulta</option>
+                  <option value="resultadoExame">Resultado de Exame</option>
+                  <option value="aniversario">Aniversário</option>
+                  <option value="lembreteRetorno">Lembrete de Retorno</option>
+                  <option value="campanhaVacinacao">
+                    Campanha de Vacinação
+                  </option>
+                </select>
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+            >
+              Cancelar
+            </button>
+            <button type="button" class="btn btn-primary" id="sendMessage">
+              Enviar
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bootstrap e JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+      // Variáveis globais
+      let patients = [];
+      let currentPatientId = null;
+      let messageModal = null;
+
+      // Elementos DOM
+      const patientForm = document.getElementById("patientForm");
+      const patientsList = document.getElementById("patientsList");
+      const noPatients = document.getElementById("noPatients");
+      const cancelEditBtn = document.getElementById("cancelEdit");
+      const bulkMessageForm = document.getElementById("bulkMessageForm");
+      const refreshListBtn = document.getElementById("refreshList");
+
+      // Inicialização
+      document.addEventListener("DOMContentLoaded", () => {
+        loadPatients();
+
+        // Inicializar o modal
+        messageModal = new bootstrap.Modal(
+          document.getElementById("messageModal")
+        );
+
+        // Event listeners
+        patientForm.addEventListener("submit", handlePatientSubmit);
+        cancelEditBtn.addEventListener("click", cancelEdit);
+        bulkMessageForm.addEventListener("submit", handleBulkMessage);
+        refreshListBtn.addEventListener("click", loadPatients);
+        document
+          .getElementById("sendMessage")
+          .addEventListener("click", sendIndividualMessage);
+      });
+
+      // Carregar lista de pacientes
+      async function loadPatients() {
+        try {
+          const response = await fetch("/api/patients");
+          if (!response.ok) throw new Error("Erro ao carregar pacientes");
+
+          patients = await response.json();
+          renderPatientsList();
+        } catch (error) {
+          console.error("Erro:", error);
+          showAlert("Erro ao carregar pacientes", "danger");
+        }
+      }
+
+      // Renderizar lista de pacientes
+      function renderPatientsList() {
+        patientsList.innerHTML = "";
+
+        if (patients.length === 0) {
+          noPatients.classList.remove("d-none");
+          return;
+        }
+
+        noPatients.classList.add("d-none");
+
+        patients.forEach((patient) => {
+          const row = document.createElement("tr");
+          row.innerHTML = `
+                    <td>${patient.nome}</td>
+                    <td>${patient.email}</td>
+                    <td>${patient.telefone || "-"}</td>
+                    <td>
+                        <button class="btn btn-sm btn-primary btn-action" onclick="openMessageModal('${
+                          patient.id
+                        }')">
+                            Mensagem
+                        </button>
+                        <button class="btn btn-sm btn-info btn-action" onclick="editPatient('${
+                          patient.id
+                        }')">
+                            Editar
+                        </button>
+                        <button class="btn btn-sm btn-danger btn-action" onclick="deletePatient('${
+                          patient.id
+                        }')">
+                            Excluir
+                        </button>
+                    </td>
+                `;
+          patientsList.appendChild(row);
+        });
+      }
+
+      // Manipular envio do formulário de paciente (criar/atualizar)
+      async function handlePatientSubmit(e) {
+        e.preventDefault();
+
+        const patientData = {
+          nome: document.getElementById("nome").value,
+          email: document.getElementById("email").value,
+          dataNascimento:
+            document.getElementById("dataNascimento").value || null,
+          telefone: document.getElementById("telefone").value || null,
+        };
+
+        try {
+          let response;
+          let method;
+          let url = "/api/patients";
+
+          if (currentPatientId) {
+            // Atualizar paciente existente
+            url += `/${currentPatientId}`;
+            method = "PUT";
+          } else {
+            // Criar novo paciente
+            method = "POST";
+          }
+
+          response = await fetch(url, {
+            method,
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(patientData),
+          });
+
+          if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.error || "Erro ao processar requisição");
+          }
+
+          const result = await response.json();
+
+          showAlert(
+            currentPatientId
+              ? `Paciente ${result.nome} atualizado com sucesso!`
+              : `Paciente ${result.nome} cadastrado com sucesso!`,
+            "success"
+          );
+
+          resetForm();
+          loadPatients();
+        } catch (error) {
+          console.error("Erro:", error);
+          showAlert(error.message, "danger");
+        }
+      }
+
+      // Editar paciente
+      function editPatient(id) {
+        const patient = patients.find((p) => p.id === id);
+        if (!patient) return;
+
+        currentPatientId = id;
+
+        document.getElementById("nome").value = patient.nome;
+        document.getElementById("email").value = patient.email;
+        document.getElementById("dataNascimento").value =
+          patient.dataNascimento || "";
+        document.getElementById("telefone").value = patient.telefone || "";
+
+        document.querySelector('button[type="submit"]').textContent =
+          "Atualizar";
+        cancelEditBtn.classList.remove("d-none");
+
+        // Scroll para o formulário
+        patientForm.scrollIntoView({ behavior: "smooth" });
+      }
+
+      // Cancelar edição
+      function cancelEdit() {
+        resetForm();
+      }
+
+      // Resetar formulário
+      function resetForm() {
+        patientForm.reset();
+        currentPatientId = null;
+        document.querySelector('button[type="submit"]').textContent =
+          "Cadastrar";
+        cancelEditBtn.classList.add("d-none");
+      }
+
+      // Excluir paciente
+      async function deletePatient(id) {
+        if (!confirm("Tem certeza que deseja excluir este paciente?")) return;
+
+        try {
+          const response = await fetch(`/api/patients/${id}`, {
+            method: "DELETE",
+          });
+
+          if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.error || "Erro ao excluir paciente");
+          }
+
+          showAlert("Paciente excluído com sucesso!", "success");
+          loadPatients();
+
+          // Se estava editando este paciente, reset o formulário
+          if (currentPatientId === id) {
+            resetForm();
+          }
+        } catch (error) {
+          console.error("Erro:", error);
+          showAlert(error.message, "danger");
+        }
+      }
+
+      // Abrir modal de mensagem
+      function openMessageModal(id) {
+        document.getElementById("patientId").value = id;
+        document.getElementById("messageTemplate").value = "";
+        messageModal.show();
+      }
+
+      // Enviar mensagem individual
+      async function sendIndividualMessage() {
+        const patientId = document.getElementById("patientId").value;
+        const templateName = document.getElementById("messageTemplate").value;
+
+        if (!templateName) {
+          showAlert("Selecione um modelo de mensagem", "warning");
+          return;
+        }
+
+        try {
+          const response = await fetch(`/api/send/${patientId}`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ templateName }),
+          });
+
+          if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.error || "Erro ao enviar mensagem");
+          }
+
+          const result = await response.json();
+          showAlert(result.message, "success");
+          messageModal.hide();
+        } catch (error) {
+          console.error("Erro:", error);
+          showAlert(error.message, "danger");
+        }
+      }
+
+      // Enviar mensagem em massa
+      async function handleBulkMessage(e) {
+        e.preventDefault();
+
+        const templateName = document.getElementById("bulkTemplate").value;
+
+        if (!templateName) {
+          showAlert("Selecione um modelo de mensagem", "warning");
+          return;
+        }
+
+        if (
+          !confirm(
+            "Tem certeza que deseja enviar esta mensagem para TODOS os pacientes?"
+          )
+        ) {
+          return;
+        }
+
+        try {
+          const response = await fetch("/api/send-all", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ templateName }),
+          });
+
+          if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.error || "Erro ao enviar mensagens");
+          }
+
+          const result = await response.json();
+          const successful = result.results.filter((r) => r.success).length;
+          const failed = result.results.length - successful;
+
+          showAlert(
+            `Mensagens enviadas: ${successful} com sucesso, ${failed} falhas.`,
+            failed > 0 ? "warning" : "success"
+          );
+
+          document.getElementById("bulkTemplate").value = "";
+        } catch (error) {
+          console.error("Erro:", error);
+          showAlert(error.message, "danger");
+        }
+      }
+
+      // Mostrar alerta temporário
+      function showAlert(message, type = "info") {
+        const alertDiv = document.createElement("div");
+        alertDiv.className = `alert alert-${type} alert-dismissible fade show`;
+        alertDiv.innerHTML = `
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            `;
+
+        // Inserir o alerta no topo da página
+        document.querySelector(".container").prepend(alertDiv);
+
+        // Auto-remover após 5 segundos
+        setTimeout(() => {
+          alertDiv.classList.remove("show");
+          setTimeout(() => alertDiv.remove(), 300);
+        }, 5000);
+      }
+    </script>
+  </body>
+</html>
