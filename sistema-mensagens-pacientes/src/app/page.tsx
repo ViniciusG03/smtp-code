@@ -151,7 +151,7 @@ export default function Home() {
     }
 
     try {
-      const resposta = await fetch("/api/send-all", {
+      const resposta = await fetch("/api/patients/send-all", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

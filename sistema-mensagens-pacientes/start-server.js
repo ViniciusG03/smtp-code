@@ -1,4 +1,4 @@
-// Arquivo de inicialização do servidor sem TypeScript
+// Arquivo de inicialização do servidor
 import { createServer } from "http";
 import { parse } from "url";
 import next from "next";
@@ -171,13 +171,33 @@ const configurarTarefasAgendadas = () => {
   cron.schedule("0 9 * * *", async () => {
     console.log("Executando tarefa agendada: verificação de aniversários");
     try {
+      // Carregar pacientes
+      const pacientesJson = fs.readFileSync(PATIENTS_FILE, "utf8");
+      const pacientes = JSON.parse(pacientesJson);
+
+      // Verificar aniversários
+      const hoje = new Date();
+      const dia = hoje.getDate();
+      const mes = hoje.getMonth() + 1; // getMonth() retorna 0-11
+
+      // Filtrar pacientes que fazem aniversário hoje
+      const aniversariantes = pacientes.filter((paciente) => {
+        if (!paciente.dataNascimento) return false;
+
+        const dataNasc = new Date(paciente.dataNascimento);
+        return dataNasc.getDate() === dia && dataNasc.getMonth() + 1 === mes;
+      });
+
+      console.log(`Encontrados ${aniversariantes.length} aniversariantes hoje`);
+
+      // Lógica para enviar emails de aniversário seria aqui
       console.log("Verificação de aniversários finalizada");
     } catch (erro) {
       console.error("Erro ao verificar aniversários:", erro);
     }
   });
 
-  console.log("Tarefas agendadas configuradas com sucesso");
+  console.log("✅ Tarefas agendadas configuradas com sucesso");
   return true;
 };
 
