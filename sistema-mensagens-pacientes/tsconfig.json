@@ -28,7 +28,8 @@
     "**/*.tsx",
     ".next/types/**/*.ts",
     "src/app/components/PatientForm.jsx",
-    "src/app/api/patients/page.jsx"
+    "src/app/api/patients/page.jsx",
+    "next.config.js"
   ],
   "exclude": ["node_modules"]
 }

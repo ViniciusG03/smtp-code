@@ -15,14 +15,14 @@ export const inicializarBancoDados = () => {
     }
 
     if (!fs.existsSync(PATIENTS_FILE)) {
-      fs.writeFileSync(PATIENTS_FILE, jsonStringify([], null, 2));
+      fs.writeFileSync(PATIENTS_FILE, JSON.stringify([], null, 2));
       console.log("Arquivo de pacientes criado com sucesso!");
     } else {
       //Verifica se o arquivo contém um JSON válido
       try {
         const conteudo = fs.readFileSync(PATIENTS_FILE, "utf8");
         if (!conteudo || conteudo.trim() === "") {
-          fs.writeFileSync(PATIENTS_FILE, jsonStringify([], null, 2));
+          fs.writeFileSync(PATIENTS_FILE, JSON.stringify([], null, 2));
         } else {
           JSON.parse(conteudo);
         }
@@ -30,7 +30,7 @@ export const inicializarBancoDados = () => {
         console.error("Erro ao analisar o arquivo de pacientes:", errorParser);
         const caminhoBackup = `${PATIENTS_FILE}.bak.${Date.now()}`;
         fs.copyFileSync(PATIENTS_FILE, caminhoBackup);
-        fs.writeFileSync(PATIENTS_FILE, jsonStringify([], null, 2));
+        fs.writeFileSync(PATIENTS_FILE, JSON.stringify([], null, 2));
       }
     }
 
@@ -81,15 +81,16 @@ export const obterPacientePorId = (id) => {
 export const criarPaciente = (dadosPaciente) => {
   const pacientes = carregarPacientes();
 
-  //Faz a verificação se o email já existe
-  if (pacientes.some((p) => p.email === dados.Paciente.email)) {
-    throw new Error("O email informado já está cadastrado.");
+  // Correção: Acesso errado a dados.Paciente
+  if (pacientes.some((p) => p.email === dadosPaciente.email)) {
+    throw new Error("Este e-mail já está cadastrado");
   }
 
   const novoPaciente = {
     id: uuidv4(),
     ...dadosPaciente,
-    dataCadastro: new Date().toISOString,
+    // Correção: Faltou o parênteses para chamar a função
+    dataCadastro: new Date().toISOString(),
   };
 
   pacientes.push(novoPaciente);
@@ -104,7 +105,8 @@ export const criarPaciente = (dadosPaciente) => {
 //Atualizar um paciente existente
 export const atualizarPaciente = (id, dadosPaciente) => {
   const pacientes = carregarPacientes();
-  const indice = pacientes.findIdex((p) => p.id === id);
+  // Correção: findIdex para findIndex
+  const indice = pacientes.findIndex((p) => p.id === id);
 
   if (indice === -1) {
     throw new Error("Paciente não encontrado.");
@@ -113,7 +115,7 @@ export const atualizarPaciente = (id, dadosPaciente) => {
   //Verificar se o email já está em uso por outro paciente
   if (
     dadosPaciente.email &&
-    dadosPaciente.email != pacientes[indice].email &&
+    dadosPaciente.email !== pacientes[indice].email &&
     pacientes.some((p) => p.id !== id && p.email === dadosPaciente.email)
   ) {
     throw new Error("O email informado já está cadastrado.");
@@ -122,7 +124,8 @@ export const atualizarPaciente = (id, dadosPaciente) => {
   pacientes[indice] = {
     ...pacientes[indice],
     ...dadosPaciente,
-    dataAtualizacao: new Date().toISOString,
+    // Correção: Faltou o parênteses para chamar a função
+    dataAtualizacao: new Date().toISOString(),
   };
 
   if (salvarPacientes(pacientes)) {
