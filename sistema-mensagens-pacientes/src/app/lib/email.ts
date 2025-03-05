@@ -184,7 +184,7 @@ export const enviarEmailEmMassa = async (
   nomeModelo: string
 ): Promise<EmailResultadoEmMassa> => {
   const resultados: EmailResultado[] = [];
-  const tamanhoDaRemessa = 5; // Enviar em pequenos lotes para evitar sobrecarga
+  const tamanhoDaRemessa = 5;
 
   // Inicializar serviço de email se ainda não estiver
   if (!servicoEmailDisponivel && !transporter) {

@@ -118,13 +118,17 @@ export default function Home() {
         throw new Error("Nenhum paciente selecionado");
       }
 
-      const resposta = await fetch(`/api/send/${pacienteSelecionadoId}`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ templateName }),
-      });
+      // Corrigindo o caminho da API
+      const resposta = await fetch(
+        `/api/patients/send/${pacienteSelecionadoId}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ templateName }),
+        }
+      );
 
       if (!resposta.ok) {
         const dadosErro = await resposta.json();
