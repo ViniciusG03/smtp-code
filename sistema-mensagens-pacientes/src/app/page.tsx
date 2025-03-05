@@ -1,18 +1,25 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { PatientForm } from "@/components/PatientForm";
-import { PatientList } from "@/components/PatientList";
-import { BulkMessageForm } from "@/components/BulkMessageForm";
-import { MessageModal } from "@/components/MessageModal";
+// Importando componentes usando o arquivo de barril
+import {
+  PatientForm,
+  PatientList,
+  BulkMessageForm,
+  MessageModal,
+} from "@/app/components";
+import { Patient, PatientData, AlertInfo } from "@/app/types";
 
 export default function Home() {
-  const [pacientes, setPacientes] = useState([]);
-  const [carregando, setCarregando] = useState(true);
-  const [pacienteAtual, setPacienteAtual] = useState(null);
-  const [mostrarModalMensagem, setMostrarModalMensagem] = useState(false);
-  const [pacienteSelecionadoId, setPacienteSelecionadoId] = useState(null);
-  const [infoAlerta, setInfoAlerta] = useState(null);
+  const [pacientes, setPacientes] = useState<Patient[]>([]);
+  const [carregando, setCarregando] = useState<boolean>(true);
+  const [pacienteAtual, setPacienteAtual] = useState<Patient | null>(null);
+  const [mostrarModalMensagem, setMostrarModalMensagem] =
+    useState<boolean>(false);
+  const [pacienteSelecionadoId, setPacienteSelecionadoId] = useState<
+    string | null
+  >(null);
+  const [infoAlerta, setInfoAlerta] = useState<AlertInfo | null>(null);
 
   // Carregar pacientes ao montar o componente
   useEffect(() => {
@@ -37,7 +44,10 @@ export default function Home() {
   };
 
   // Função para mostrar alerta
-  const mostrarAlerta = (mensagem, tipo = "info") => {
+  const mostrarAlerta = (
+    mensagem: string,
+    tipo: AlertInfo["tipo"] = "info"
+  ) => {
     setInfoAlerta({ mensagem, tipo });
     setTimeout(() => {
       setInfoAlerta(null);
@@ -45,7 +55,7 @@ export default function Home() {
   };
 
   // Função para lidar com a criação/atualização de paciente
-  const handleFormSubmit = async (pacienteData) => {
+  const handleFormSubmit = async (pacienteData: PatientData) => {
     try {
       let url = "/api/patients";
       let metodo = "POST";
@@ -79,14 +89,14 @@ export default function Home() {
       // Resetar estado e recarregar lista
       setPacienteAtual(null);
       carregarPacientes();
-    } catch (erro) {
+    } catch (erro: any) {
       console.error("Erro:", erro);
       mostrarAlerta(erro.message, "erro");
     }
   };
 
   // Função para editar paciente
-  const handleEditarPaciente = (paciente) => {
+  const handleEditarPaciente = (paciente: Patient) => {
     setPacienteAtual(paciente);
   };
 
@@ -96,14 +106,18 @@ export default function Home() {
   };
 
   // Função para abrir modal de mensagem
-  const handleAbrirModalMensagem = (pacienteId) => {
+  const handleAbrirModalMensagem = (pacienteId: string) => {
     setPacienteSelecionadoId(pacienteId);
     setMostrarModalMensagem(true);
   };
 
   // Função para enviar mensagem individual
-  const handleEnviarMensagem = async (templateName) => {
+  const handleEnviarMensagem = async (templateName: string) => {
     try {
+      if (!pacienteSelecionadoId) {
+        throw new Error("Nenhum paciente selecionado");
+      }
+
       const resposta = await fetch(`/api/send/${pacienteSelecionadoId}`, {
         method: "POST",
         headers: {
@@ -120,14 +134,14 @@ export default function Home() {
       const resultado = await resposta.json();
       mostrarAlerta(resultado.message, "sucesso");
       setMostrarModalMensagem(false);
-    } catch (erro) {
+    } catch (erro: any) {
       console.error("Erro:", erro);
       mostrarAlerta(erro.message, "erro");
     }
   };
 
   // Função para enviar mensagem em massa
-  const handleEnviarMensagemEmMassa = async (templateName) => {
+  const handleEnviarMensagemEmMassa = async (templateName: string) => {
     if (
       !window.confirm(
         "Tem certeza que deseja enviar esta mensagem para TODOS os pacientes?"
@@ -158,14 +172,14 @@ export default function Home() {
         `Mensagens enviadas: ${sucedidos} com sucesso, ${falhas} falhas.`,
         falhas > 0 ? "aviso" : "sucesso"
       );
-    } catch (erro) {
+    } catch (erro: any) {
       console.error("Erro:", erro);
       mostrarAlerta(erro.message, "erro");
     }
   };
 
   // Função para excluir paciente
-  const handleExcluirPaciente = async (id) => {
+  const handleExcluirPaciente = async (id: string) => {
     if (!window.confirm("Tem certeza que deseja excluir este paciente?"))
       return;
 
@@ -188,7 +202,7 @@ export default function Home() {
       if (pacienteAtual && pacienteAtual.id === id) {
         setPacienteAtual(null);
       }
-    } catch (erro) {
+    } catch (erro: any) {
       console.error("Erro:", erro);
       mostrarAlerta(erro.message, "erro");
     }

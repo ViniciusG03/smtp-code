@@ -1,9 +1,20 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, ChangeEvent, FormEvent } from "react";
+import { Patient, PatientData } from "@/app/types";
 
-export function PatientForm({ currentPatient, onSubmit, onCancel }) {
-  const [formData, setFormData] = useState({
+interface PatientFormProps {
+  currentPatient: Patient | null;
+  onSubmit: (data: PatientData) => void;
+  onCancel: () => void;
+}
+
+export function PatientForm({
+  currentPatient,
+  onSubmit,
+  onCancel,
+}: PatientFormProps) {
+  const [formData, setFormData] = useState<PatientData>({
     nome: "",
     email: "",
     dataNascimento: "",
@@ -14,10 +25,12 @@ export function PatientForm({ currentPatient, onSubmit, onCancel }) {
   useEffect(() => {
     if (currentPatient) {
       setFormData({
-        nome: currentPatient.nome || "",
-        email: currentPatient.email || "",
+        nome: currentPatient.nome,
+        email: currentPatient.email,
         dataNascimento: currentPatient.dataNascimento
-          ? currentPatient.dataNascimento.split("T")[0]
+          ? typeof currentPatient.dataNascimento === "string"
+            ? currentPatient.dataNascimento.split("T")[0]
+            : ""
           : "",
         telefone: currentPatient.telefone || "",
       });
@@ -33,7 +46,7 @@ export function PatientForm({ currentPatient, onSubmit, onCancel }) {
   }, [currentPatient]);
 
   // Manipular mudanças nos campos
-  const handleChange = (e) => {
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
@@ -42,7 +55,7 @@ export function PatientForm({ currentPatient, onSubmit, onCancel }) {
   };
 
   // Manipular envio do formulário
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     onSubmit(formData);
   };

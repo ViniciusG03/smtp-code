@@ -1,12 +1,22 @@
 import { NextResponse } from "next/server";
-import { obterPacientePorId } from "@/lib/db";
-import { enviarEmail } from "@/lib/email";
+import { obterPacientePorId } from "@/app/lib/db";
+import { enviarEmail } from "@/app/lib/email";
+
+interface RouteParams {
+  params: {
+    id: string;
+  };
+}
+
+interface SendRequestData {
+  templateName: string;
+}
 
 // POST /api/send/[id] - Enviar uma mensagem para um paciente específico
-export async function POST(request, { params }) {
+export async function POST(request: Request, { params }: RouteParams) {
   try {
     const id = params.id;
-    const dados = await request.json();
+    const dados = (await request.json()) as SendRequestData;
     const { templateName } = dados;
 
     if (!templateName) {

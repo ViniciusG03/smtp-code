@@ -1,11 +1,15 @@
 import { NextResponse } from "next/server";
-import { carregarPacientes } from "@/lib/db";
-import { enviarEmailEmMassa } from "@/lib/email";
+import { carregarPacientes } from "@/app/lib/db";
+import { enviarEmailEmMassa } from "@/app/lib/email";
+
+interface SendAllRequestData {
+  templateName: string;
+}
 
 // POST /api/send-all - Enviar uma mensagem para todos os pacientes
-export async function POST(request) {
+export async function POST(request: Request) {
   try {
-    const dados = await request.json();
+    const dados = (await request.json()) as SendAllRequestData;
     const { templateName } = dados;
 
     if (!templateName) {

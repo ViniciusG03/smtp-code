@@ -1,6 +1,20 @@
 "use client";
 
-export function PatientList({ patients, onEdit, onDelete, onSendMessage }) {
+import { Patient } from "@/app/types";
+
+interface PatientListProps {
+  patients: Patient[];
+  onEdit: (patient: Patient) => void;
+  onDelete: (id: string) => void;
+  onSendMessage: (id: string) => void;
+}
+
+export function PatientList({
+  patients,
+  onEdit,
+  onDelete,
+  onSendMessage,
+}: PatientListProps) {
   if (!patients || patients.length === 0) {
     return (
       <div className="bg-blue-50 text-blue-700 p-4 rounded-md text-center">

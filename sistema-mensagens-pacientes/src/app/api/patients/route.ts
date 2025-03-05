@@ -1,5 +1,13 @@
 import { NextResponse } from "next/server";
-import { carregarPacientes, criarPaciente } from "@/lib/db";
+import { carregarPacientes, criarPaciente } from "@/app/lib/db";
+
+// Tipos para os dados do paciente
+interface PatientData {
+  nome: string;
+  email: string;
+  dataNascimento?: string | null;
+  telefone?: string | null;
+}
 
 // GET /api/patients - Obter todos os pacientes
 export async function GET() {
@@ -16,9 +24,9 @@ export async function GET() {
 }
 
 // POST /api/patients - Criar um novo paciente
-export async function POST(request) {
+export async function POST(request: Request) {
   try {
-    const dados = await request.json();
+    const dados = (await request.json()) as PatientData;
     const { nome, email, dataNascimento, telefone } = dados;
 
     if (!nome || !email) {
@@ -36,7 +44,7 @@ export async function POST(request) {
     });
 
     return NextResponse.json(novoPaciente, { status: 201 });
-  } catch (erro) {
+  } catch (erro: any) {
     console.error("Erro ao criar paciente:", erro);
 
     if (erro.message === "Este e-mail já está cadastrado") {

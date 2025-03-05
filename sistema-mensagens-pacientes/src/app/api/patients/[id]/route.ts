@@ -1,4 +1,13 @@
-export async function DELETE(request, { params }) {
+import { NextResponse } from "next/server";
+import { excluirPaciente } from "@/app/lib/db";
+
+interface RouteParams {
+  params: {
+    id: string;
+  };
+}
+
+export async function DELETE(request: Request, { params }: RouteParams) {
   try {
     const id = params.id;
     excluirPaciente(id);
@@ -7,7 +16,7 @@ export async function DELETE(request, { params }) {
       success: true,
       message: "Paciente excluído com sucesso",
     });
-  } catch (erro) {
+  } catch (erro: any) {
     console.error("Erro ao excluir paciente:", erro);
 
     if (erro.message === "Paciente não encontrado") {

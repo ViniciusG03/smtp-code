@@ -1,13 +1,20 @@
 import fs from "fs";
 import path from "path";
 import { v4 as uuidv4 } from "uuid";
+import { fileURLToPath } from "url";
+import { dirname } from "path";
+import { Patient, PatientData } from "../types/index.js";
+
+// Obter o diretório atual no modo ESM
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 //CAMINHOS
 const DATA_DIR = path.join(process.cwd(), "data");
 const PATIENTS_FILE = path.join(DATA_DIR, "patients.json");
 
 //Garantir que o diretório de dados exista
-export const inicializarBancoDados = () => {
+export const inicializarBancoDados = (): boolean => {
   try {
     if (!fs.existsSync(DATA_DIR)) {
       fs.mkdirSync(DATA_DIR, { recursive: true });
@@ -42,7 +49,7 @@ export const inicializarBancoDados = () => {
 };
 
 //Carregar pacientes do JSON
-export const carregarPacientes = () => {
+export const carregarPacientes = (): Patient[] => {
   try {
     inicializarBancoDados();
 
@@ -60,7 +67,7 @@ export const carregarPacientes = () => {
 };
 
 //Salvar pacientes no JSON
-export const salvarPacientes = (pacientes) => {
+export const salvarPacientes = (pacientes: Patient[]): boolean => {
   try {
     inicializarBancoDados();
     fs.writeFileSync(PATIENTS_FILE, JSON.stringify(pacientes, null, 2));
@@ -72,24 +79,22 @@ export const salvarPacientes = (pacientes) => {
 };
 
 // Obter um único paciente pelo ID
-export const obterPacientePorId = (id) => {
+export const obterPacientePorId = (id: string): Patient | null => {
   const pacientes = carregarPacientes();
   return pacientes.find((p) => p.id === id) || null;
 };
 
 // Criar um novo paciente
-export const criarPaciente = (dadosPaciente) => {
+export const criarPaciente = (dadosPaciente: PatientData): Patient => {
   const pacientes = carregarPacientes();
 
-  // Correção: Acesso errado a dados.Paciente
   if (pacientes.some((p) => p.email === dadosPaciente.email)) {
     throw new Error("Este e-mail já está cadastrado");
   }
 
-  const novoPaciente = {
+  const novoPaciente: Patient = {
     id: uuidv4(),
     ...dadosPaciente,
-    // Correção: Faltou o parênteses para chamar a função
     dataCadastro: new Date().toISOString(),
   };
 
@@ -103,9 +108,11 @@ export const criarPaciente = (dadosPaciente) => {
 };
 
 //Atualizar um paciente existente
-export const atualizarPaciente = (id, dadosPaciente) => {
+export const atualizarPaciente = (
+  id: string,
+  dadosPaciente: Partial<PatientData>
+): Patient => {
   const pacientes = carregarPacientes();
-  // Correção: findIdex para findIndex
   const indice = pacientes.findIndex((p) => p.id === id);
 
   if (indice === -1) {
@@ -124,7 +131,6 @@ export const atualizarPaciente = (id, dadosPaciente) => {
   pacientes[indice] = {
     ...pacientes[indice],
     ...dadosPaciente,
-    // Correção: Faltou o parênteses para chamar a função
     dataAtualizacao: new Date().toISOString(),
   };
 
@@ -136,7 +142,7 @@ export const atualizarPaciente = (id, dadosPaciente) => {
 };
 
 //Excluir um paciente existente
-export const excluirPaciente = (id) => {
+export const excluirPaciente = (id: string): boolean => {
   const pacientes = carregarPacientes();
   const pacientesFiltrados = pacientes.filter((p) => p.id !== id);
 

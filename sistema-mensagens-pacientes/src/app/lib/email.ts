@@ -1,7 +1,13 @@
 import nodemailer from "nodemailer";
+import {
+  Patient,
+  EmailTemplate,
+  EmailResultado,
+  EmailResultadoEmMassa,
+} from "@/app/types";
 
 //Modelos de mensagens
-export const modelosMensagens = {
+export const modelosMensagens: Record<string, EmailTemplate> = {
   lembreteConsulta: {
     subject: "Lembrete: Sua Consulta Agendada - Clínica Lavorato",
     body: "Olá {{nome}},\n\nEste é um lembrete para sua consulta agendada para amanhã às 15:00 na Clínica Lavorato.\n\nPor favor, confirme sua presença respondendo este e-mail ou entrando em contato pelo telefone (XX) XXXX-XXXX.\n\nCaso precise reagendar, solicitamos que informe com pelo menos 4 horas de antecedência.\n\nAtenciosamente,\nEquipe Clínica Lavorato",
@@ -25,10 +31,10 @@ export const modelosMensagens = {
 };
 
 //Configuração de e-mail
-let transporter = null;
+let transporter: nodemailer.Transporter | null = null;
 let servicoEmailDisponivel = false;
 
-export const inicializarServicoEmail = async () => {
+export const inicializarServicoEmail = async (): Promise<boolean> => {
   try {
     //Configuração de e-mail
     const configEmail = {
@@ -42,7 +48,7 @@ export const inicializarServicoEmail = async () => {
       connectionTimeout: 30000,
       greetingTimeout: 30000,
       tls: {
-        rejecUnauthorized: false,
+        rejectUnauthorized: false,
       },
     };
 
@@ -52,6 +58,7 @@ export const inicializarServicoEmail = async () => {
     const sucesso = await transporter.verify();
     servicoEmailDisponivel = true;
     console.log("Serviço de e-mail inicializado com sucesso:", sucesso);
+    return true;
   } catch (error) {
     console.error("Erro ao inicializar serviço de e-mail:", error);
     servicoEmailDisponivel = false;
@@ -59,7 +66,10 @@ export const inicializarServicoEmail = async () => {
   }
 };
 
-export const enviarEmail = async (paciente, nomeModelo) => {
+export const enviarEmail = async (
+  paciente: Patient,
+  nomeModelo: string
+): Promise<boolean> => {
   //Inicializar serviço de e-mail *CASO NÃO ESTEJA habilitado*
   if (!transporter) {
     await inicializarServicoEmail();
@@ -95,11 +105,15 @@ export const enviarEmail = async (paciente, nomeModelo) => {
     console.log(`Tentando enviar email para: ${paciente.email}`);
 
     // Enviar email
+    if (!transporter) {
+      throw new Error("Transporter não inicializado");
+    }
+
     const info = await transporter.sendMail(opcoesEmail);
 
     console.log(`Email enviado para ${paciente.email}: ${info.messageId}`);
     return true;
-  } catch (erro) {
+  } catch (erro: any) {
     console.error(`Erro ao enviar email para ${paciente.email}:`, erro);
 
     // Verificar tipo de erro para feedback mais específico
@@ -117,8 +131,11 @@ export const enviarEmail = async (paciente, nomeModelo) => {
   }
 };
 
-export const enviarEmailEmMassa = async (pacientes, nomeModelo) => {
-  const resultados = [];
+export const enviarEmailEmMassa = async (
+  pacientes: Patient[],
+  nomeModelo: string
+): Promise<EmailResultadoEmMassa> => {
+  const resultados: EmailResultado[] = [];
   const tamanhoDaRemessa = 5; // Enviar em pequenos lotes para evitar sobrecarga
 
   // Dividir pacientes em lotes

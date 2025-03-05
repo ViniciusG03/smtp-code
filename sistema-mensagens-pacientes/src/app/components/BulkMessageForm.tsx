@@ -1,11 +1,15 @@
 "use client";
 
-import { useState } from "react";
+import { useState, FormEvent, ChangeEvent } from "react";
 
-export function BulkMessageForm({ onSubmit }) {
-  const [template, setTemplate] = useState("");
+interface BulkMessageFormProps {
+  onSubmit: (templateName: string) => void;
+}
 
-  const handleSubmit = (e) => {
+export function BulkMessageForm({ onSubmit }: BulkMessageFormProps) {
+  const [template, setTemplate] = useState<string>("");
+
+  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     if (!template) {
@@ -15,6 +19,10 @@ export function BulkMessageForm({ onSubmit }) {
 
     onSubmit(template);
     setTemplate(""); // Reset após envio
+  };
+
+  const handleChange = (e: ChangeEvent<HTMLSelectElement>) => {
+    setTemplate(e.target.value);
   };
 
   return (
@@ -28,7 +36,7 @@ export function BulkMessageForm({ onSubmit }) {
         <select
           id="bulkTemplate"
           value={template}
-          onChange={(e) => setTemplate(e.target.value)}
+          onChange={handleChange}
           className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-yellow-500 focus:border-yellow-500"
           required>
           <option value="">Selecione um modelo</option>

@@ -1,11 +1,16 @@
 "use client";
 
-import { useState } from "react";
+import { useState, FormEvent, ChangeEvent } from "react";
 
-export function MessageModal({ onClose, onSend }) {
-  const [template, setTemplate] = useState("");
+interface MessageModalProps {
+  onClose: () => void;
+  onSend: (templateName: string) => void;
+}
 
-  const handleSubmit = (e) => {
+export function MessageModal({ onClose, onSend }: MessageModalProps) {
+  const [template, setTemplate] = useState<string>("");
+
+  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     if (!template) {
@@ -14,6 +19,10 @@ export function MessageModal({ onClose, onSend }) {
     }
 
     onSend(template);
+  };
+
+  const handleChange = (e: ChangeEvent<HTMLSelectElement>) => {
+    setTemplate(e.target.value);
   };
 
   return (
@@ -33,7 +42,7 @@ export function MessageModal({ onClose, onSend }) {
             <select
               id="messageTemplate"
               value={template}
-              onChange={(e) => setTemplate(e.target.value)}
+              onChange={handleChange}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
               required>
               <option value="">Selecione um modelo</option>

@@ -1,16 +1,17 @@
 import cron from "node-cron";
 import { carregarPacientes } from "./db";
-import { enviarEmail, modelosMensagens } from "./email";
+import { enviarEmail } from "./email";
+import { Patient } from "@/app/types";
 
 // Função para verificar aniversários
-const verificarAniversariosHoje = async () => {
+const verificarAniversariosHoje = async (): Promise<void> => {
   const pacientes = carregarPacientes();
   const hoje = new Date();
   const dia = hoje.getDate();
   const mes = hoje.getMonth() + 1; // getMonth() retorna 0-11
 
   // Filtrar pacientes que fazem aniversário hoje
-  const aniversariantes = pacientes.filter((paciente) => {
+  const aniversariantes = pacientes.filter((paciente: Patient) => {
     if (!paciente.dataNascimento) return false;
 
     const dataNasc = new Date(paciente.dataNascimento);
@@ -27,7 +28,7 @@ const verificarAniversariosHoje = async () => {
 };
 
 // Função para configurar tarefas agendadas
-export const configurarTarefasAgendadas = () => {
+export const configurarTarefasAgendadas = (): boolean => {
   // Verificar aniversários todos os dias às 9h
   cron.schedule("0 9 * * *", async () => {
     console.log("Executando tarefa agendada: verificação de aniversários");
