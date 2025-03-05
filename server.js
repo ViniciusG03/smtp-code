@@ -17,15 +17,19 @@ const DATA_DIR = path.join(__dirname, "data");
 const PATIENTS_FILE = path.join(DATA_DIR, "patients.json");
 
 // Configurações de envio de e-mail
-// Configuração para servidor SMTP do Gmail
+// Configuração para servidor SMTP da Localweb
 const emailConfig = {
-  service: "gmail", // Usar o serviço pré-definido do Gmail
+  host: "email-ssl.com.br", // servidor SMTP da Localweb
+  port: 587, // tentar porta 587 novamente
+  secure: false, // false para 587
   auth: {
-    user: "kirt.33mes@gmail.com", // Seu email do Gmail
-    pass: "hlcz vmpi bzex fapi", // Sua senha de app do Gmail (mantenha a mesma)
+    user: "guias@lavorato.com.br",
+    pass: "@Nise2024",
   },
+  connectionTimeout: 30000, // aumentar timeout para 30 segundos
+  greetingTimeout: 30000,
   tls: {
-    rejectUnauthorized: false, // Em ambientes de desenvolvimento pode ser necessário
+    rejectUnauthorized: false, // necessário em alguns ambientes
   },
 };
 
@@ -36,11 +40,17 @@ let emailServiceAvailable = false;
 // Verificar conexão com o servidor de e-mail
 transporter.verify(function (error, success) {
   if (error) {
-    console.error("Erro ao conectar com servidor de e-mail Gmail:", error);
+    console.error("Erro ao conectar com servidor de e-mail:", error);
     console.log("AVISO: Sistema iniciado sem capacidade de envio de e-mails!");
+    console.log(
+      "Verifique as configurações do servidor SMTP no código (host, porta, credenciais)."
+    );
+    console.log(
+      "O sistema continuará funcionando, mas não enviará e-mails até que o problema seja resolvido."
+    );
     emailServiceAvailable = false;
   } else {
-    console.log("Servidor de e-mail Gmail está pronto para enviar mensagens");
+    console.log("Servidor de e-mail está pronto para enviar mensagens");
     emailServiceAvailable = true;
   }
 });
@@ -164,7 +174,6 @@ function savePatients(patients) {
 }
 
 // Enviar e-mail para um paciente
-// Enviar e-mail para um paciente
 async function sendEmail(patient, templateName) {
   // Se o serviço de e-mail não estiver disponível, registrar e retornar
   if (!emailServiceAvailable) {
@@ -188,7 +197,7 @@ async function sendEmail(patient, templateName) {
   const body = template.body.replace(/\{\{nome\}\}/g, patient.nome);
 
   const mailOptions = {
-    from: '"Sistema de Pacientes" <kirt.33mes@gmail.com>', // Use seu email do Gmail aqui
+    from: '"Sistema de Pacientes" <guias@lavorato.com.br>',
     to: patient.email,
     subject: template.subject,
     text: body,
@@ -209,13 +218,13 @@ async function sendEmail(patient, templateName) {
 
     // Verificar tipo de erro para feedback mais específico
     if (error.code === "EAUTH") {
-      console.log("Erro de autenticação - verifique usuário e senha do Gmail");
+      console.log("Erro de autenticação - verifique usuário e senha do e-mail");
     } else if (error.code === "ETIMEDOUT") {
       console.log(
-        "Erro de timeout - verifique sua conexão com a internet e se o Gmail não está bloqueado"
+        "Erro de timeout - verifique se o servidor SMTP está acessível"
       );
     } else if (error.code === "ESOCKET") {
-      console.log("Erro de conexão - verifique sua conexão com a internet");
+      console.log("Erro de conexão - verifique configurações de host/porta");
     }
 
     return false;
