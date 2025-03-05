@@ -34,8 +34,38 @@ export const modelosMensagens: Record<string, EmailTemplate> = {
 let transporter: nodemailer.Transporter | null = null;
 let servicoEmailDisponivel = false;
 
+// Função para verificar se todas as variáveis de ambiente necessárias estão definidas
+const verificarConfiguracoesEmail = (): boolean => {
+  // Aceitando tanto EMAIL_PASS quanto EMAIL_PASSWORD para compatibilidade
+  const emailPass = process.env.EMAIL_PASS || process.env.EMAIL_PASSWORD;
+
+  if (
+    !process.env.EMAIL_HOST ||
+    !process.env.EMAIL_PORT ||
+    !process.env.EMAIL_USER ||
+    !emailPass
+  ) {
+    console.error(`Configurações de email incompletas`);
+    return false;
+  }
+
+  return true;
+};
+
 export const inicializarServicoEmail = async (): Promise<boolean> => {
   try {
+    // Verificar se as configurações de email estão completas
+    if (!verificarConfiguracoesEmail()) {
+      console.warn(
+        "Configurações de email incompletas. Serviço de email não será inicializado."
+      );
+      servicoEmailDisponivel = false;
+      return false;
+    }
+
+    // Aceitando tanto EMAIL_PASS quanto EMAIL_PASSWORD para compatibilidade
+    const emailPass = process.env.EMAIL_PASS || process.env.EMAIL_PASSWORD;
+
     //Configuração de e-mail
     const configEmail = {
       host: process.env.EMAIL_HOST,
@@ -43,7 +73,7 @@ export const inicializarServicoEmail = async (): Promise<boolean> => {
       secure: process.env.EMAIL_SECURE === "true",
       auth: {
         user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS,
+        pass: emailPass,
       },
       connectionTimeout: 30000,
       greetingTimeout: 30000,
@@ -55,10 +85,22 @@ export const inicializarServicoEmail = async (): Promise<boolean> => {
     transporter = nodemailer.createTransport(configEmail);
 
     //Verificar conexão com o servidor de e-mail
-    const sucesso = await transporter.verify();
-    servicoEmailDisponivel = true;
-    console.log("Serviço de e-mail inicializado com sucesso:", sucesso);
-    return true;
+    const sucesso = await transporter.verify().catch((error) => {
+      console.error("Erro ao verificar serviço de email:", error);
+      return false;
+    });
+
+    servicoEmailDisponivel = Boolean(sucesso);
+
+    if (servicoEmailDisponivel) {
+      console.log("Serviço de e-mail inicializado com sucesso");
+    } else {
+      console.warn(
+        "Serviço de e-mail não pôde ser verificado. Verifique as configurações."
+      );
+    }
+
+    return servicoEmailDisponivel;
   } catch (error) {
     console.error("Erro ao inicializar serviço de e-mail:", error);
     servicoEmailDisponivel = false;
@@ -93,9 +135,15 @@ export const enviarEmail = async (
   //Substituir placeholders no corpo da mensagem
   const corpo = modelo.body.replace(/\{\{nome\}\}/g, paciente.nome);
 
+  // Obter destinatários em cópia, se configurados
+  const cc = process.env.EMAIL_CC ? process.env.EMAIL_CC.split(",") : [];
+  const bcc = process.env.EMAIL_BCC ? process.env.EMAIL_BCC.split(",") : [];
+
   const opcoesEmail = {
     from: `"Sistema de Pacientes" <${process.env.EMAIL_USER}>`,
     to: paciente.email,
+    cc,
+    bcc,
     subject: modelo.subject,
     text: corpo,
     html: corpo.replace(/\n/g, "<br>"),
@@ -138,6 +186,26 @@ export const enviarEmailEmMassa = async (
   const resultados: EmailResultado[] = [];
   const tamanhoDaRemessa = 5; // Enviar em pequenos lotes para evitar sobrecarga
 
+  // Inicializar serviço de email se ainda não estiver
+  if (!servicoEmailDisponivel && !transporter) {
+    await inicializarServicoEmail();
+  }
+
+  // Verificar se o serviço está disponível
+  if (!servicoEmailDisponivel) {
+    return {
+      sucesso: false,
+      totalResultados: pacientes.length,
+      contagemSucesso: 0,
+      contagemFalhas: pacientes.length,
+      resultados: pacientes.map((p) => ({
+        id: p.id,
+        email: p.email,
+        sucesso: false,
+      })),
+    };
+  }
+
   // Dividir pacientes em lotes
   for (let i = 0; i < pacientes.length; i += tamanhoDaRemessa) {
     const lote = pacientes.slice(i, i + tamanhoDaRemessa);
@@ -173,7 +241,7 @@ export const enviarEmailEmMassa = async (
   const falhas = resultados.length - sucedidos;
 
   return {
-    sucesso: true,
+    sucesso: falhas === 0,
     totalResultados: resultados.length,
     contagemSucesso: sucedidos,
     contagemFalhas: falhas,

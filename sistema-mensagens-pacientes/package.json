@@ -3,9 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "ts-node --esm server.ts",
+    "dev": "node start-server.js",
     "build": "next build",
-    "start": "NODE_ENV=production ts-node --esm server.ts",
+    "start": "NODE_ENV=production node start-server.js",
+    "start-win": "set NODE_ENV=production && node start-server.js",
     "lint": "next lint"
   },
   "dependencies": {
@@ -32,6 +33,7 @@
     "eslint-config-next": "15.2.1",
     "tailwindcss": "^4",
     "ts-node": "^10.9.2",
+    "tsconfig-paths": "^4.2.0",
     "typescript": "^5"
   },
   "type": "module"
