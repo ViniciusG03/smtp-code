@@ -16,20 +16,22 @@ const PORT = process.env.PORT || 3000;
 const DATA_DIR = path.join(__dirname, "data");
 const PATIENTS_FILE = path.join(DATA_DIR, "patients.json");
 
+require("dotenv").config();
+
 // Configurações de envio de e-mail
 // Configuração para servidor SMTP da Localweb
 const emailConfig = {
-  host: "email-ssl.com.br", // servidor SMTP da Localweb
-  port: 587, // tentar porta 587 novamente
-  secure: false, // false para 587
+  host: process.env.EMAIL_HOST,
+  port: parseInt(process.env.EMAIL_PORT),
+  secure: process.env.EMAIL_SECURE === "true",
   auth: {
-    user: "guias@lavorato.com.br",
-    pass: "@Nise2024",
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASSWORD,
   },
-  connectionTimeout: 30000, // aumentar timeout para 30 segundos
+  connectionTimeout: 30000,
   greetingTimeout: 30000,
   tls: {
-    rejectUnauthorized: false, // necessário em alguns ambientes
+    rejectUnauthorized: false,
   },
 };
 
@@ -197,7 +199,7 @@ async function sendEmail(patient, templateName) {
   const body = template.body.replace(/\{\{nome\}\}/g, patient.nome);
 
   const mailOptions = {
-    from: '"Sistema de Pacientes" <guias@lavorato.com.br>',
+    from: `"Sistema de Pacientes" <${process.env.EMAIL_USER}>`,
     to: patient.email,
     subject: template.subject,
     text: body,
