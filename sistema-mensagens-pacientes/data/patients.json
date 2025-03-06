@@ -1,1 +1,18 @@
-[]
+[
+  {
+    "id": "f93e016e-baee-440a-90e9-9ddea64b2aaa",
+    "nome": "Vinicius Oliveira",
+    "email": "viniciusgomes.33mes@gmail.com",
+    "dataNascimento": "2024-12-20",
+    "telefone": null,
+    "dataCadastro": "2025-03-05T23:54:32.326Z"
+  },
+  {
+    "id": "d19628e9-db18-41f2-ad94-5ee4c29905ac",
+    "nome": "Lucas Alves",
+    "email": "lucasgabrielsilvaa20@gmail.com",
+    "dataNascimento": "2024-12-20",
+    "telefone": null,
+    "dataCadastro": "2025-03-05T23:56:39.647Z"
+  }
+]

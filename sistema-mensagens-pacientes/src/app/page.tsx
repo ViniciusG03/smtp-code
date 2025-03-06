@@ -9,6 +9,7 @@ import {
   MessageModal,
 } from "@/app/components";
 import { Patient, PatientData, AlertInfo } from "@/app/types";
+import Link from "next/link";
 
 export default function Home() {
   const [pacientes, setPacientes] = useState<Patient[]>([]);
@@ -218,6 +219,11 @@ export default function Home() {
         <h1 className="text-3xl font-bold mb-8 text-blue-800">
           Sistema de Mensagens para Pacientes
         </h1>
+        <Link
+          href="/config/email"
+          className="text-blue-600 hover:text-blue-800 text-sm font-medium bg-white py-2 px-4 rounded shadow">
+          Configurações de Email
+        </Link>
 
         {/* Componente de alerta */}
         {infoAlerta && (

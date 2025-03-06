@@ -5,6 +5,7 @@ import {
   EmailResultado,
   EmailResultadoEmMassa,
 } from "@/app/types";
+import { carregarConfiguracao } from "@/app/api/config/email/route";
 
 //Modelos de mensagens
 export const modelosMensagens: Record<string, EmailTemplate> = {
@@ -108,6 +109,39 @@ export const inicializarServicoEmail = async (): Promise<boolean> => {
   }
 };
 
+// Função para obter os destinatários em cópia (CC) e cópia oculta (BCC)
+const obterDestinatariosCopias = (nomeModelo: string) => {
+  // Obter destinatários em cópia configurados nas variáveis de ambiente
+  const cc = process.env.EMAIL_CC
+    ? process.env.EMAIL_CC.split(",").map((email) => email.trim())
+    : [];
+
+  // Obter configuração de BCC do arquivo de configuração
+  const config = carregarConfiguracao();
+
+  // Verificar se há BCC específico para este modelo
+  let bcc: string[] = [];
+
+  if (config.templateBcc && config.templateBcc[nomeModelo]) {
+    // Usar BCC específico para este modelo
+    bcc = config.templateBcc[nomeModelo]
+      .split(",")
+      .map((email) => email.trim())
+      .filter(Boolean);
+  } else if (config.defaultBcc) {
+    // Usar BCC padrão
+    bcc = config.defaultBcc
+      .split(",")
+      .map((email) => email.trim())
+      .filter(Boolean);
+  } else if (process.env.EMAIL_BCC) {
+    // Cair para variável de ambiente se nenhuma configuração estiver definida
+    bcc = process.env.EMAIL_BCC.split(",").map((email) => email.trim());
+  }
+
+  return { cc, bcc };
+};
+
 export const enviarEmail = async (
   paciente: Patient,
   nomeModelo: string
@@ -135,9 +169,8 @@ export const enviarEmail = async (
   //Substituir placeholders no corpo da mensagem
   const corpo = modelo.body.replace(/\{\{nome\}\}/g, paciente.nome);
 
-  // Obter destinatários em cópia, se configurados
-  const cc = process.env.EMAIL_CC ? process.env.EMAIL_CC.split(",") : [];
-  const bcc = process.env.EMAIL_BCC ? process.env.EMAIL_BCC.split(",") : [];
+  // Obter destinatários em cópia e cópia oculta
+  const { cc, bcc } = obterDestinatariosCopias(nomeModelo);
 
   const opcoesEmail = {
     from: `"Sistema de Pacientes" <${process.env.EMAIL_USER}>`,
@@ -151,6 +184,9 @@ export const enviarEmail = async (
 
   try {
     console.log(`Tentando enviar email para: ${paciente.email}`);
+    if (bcc.length > 0) {
+      console.log(`Com cópia oculta para: ${bcc.join(", ")}`);
+    }
 
     // Enviar email
     if (!transporter) {

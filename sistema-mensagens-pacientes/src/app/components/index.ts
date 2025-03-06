@@ -3,3 +3,4 @@ export * from "./PatientForm";
 export * from "./PatientList";
 export * from "./BulkMessageForm";
 export * from "./MessageModal";
+export * from "./EmailConfigForm";
