@@ -16,11 +16,7 @@ export interface EmailConfigData {
 export function EmailConfigForm({ onSave }: EmailConfigProps) {
   const [defaultBcc, setDefaultBcc] = useState<string>("");
   const [templateBcc, setTemplateBcc] = useState<{ [key: string]: string }>({
-    lembreteConsulta: "",
-    resultadoExame: "",
-    aniversario: "",
-    lembreteRetorno: "",
-    campanhaVacinacao: "",
+    alertaGuias: "",
   });
   const [carregando, setCarregando] = useState<boolean>(true);
 
@@ -37,11 +33,7 @@ export function EmailConfigForm({ onSave }: EmailConfigProps) {
 
           // Inicializar templateBcc com valores do servidor ou padrões vazios
           const templates = {
-            lembreteConsulta: "",
-            resultadoExame: "",
-            aniversario: "",
-            lembreteRetorno: "",
-            campanhaVacinacao: "",
+            alertaGuias: "",
             ...data.templateBcc,
           };
 
@@ -148,11 +140,7 @@ export function EmailConfigForm({ onSave }: EmailConfigProps) {
 // Função auxiliar para obter nomes amigáveis dos templates
 function getTemplateLabel(templateKey: string): string {
   const labels: { [key: string]: string } = {
-    lembreteConsulta: "Lembrete de Consulta",
-    resultadoExame: "Resultado de Exame",
-    aniversario: "Aniversário",
-    lembreteRetorno: "Lembrete de Retorno",
-    campanhaVacinacao: "Campanha de Vacinação",
+    alertaGuias: "Alerta Guias",
   };
 
   return labels[templateKey] || templateKey;

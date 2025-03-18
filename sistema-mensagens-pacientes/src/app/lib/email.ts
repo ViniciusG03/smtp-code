@@ -9,25 +9,9 @@ import { carregarConfiguracao } from "@/app/api/config/email/route";
 
 //Modelos de mensagens
 export const modelosMensagens: Record<string, EmailTemplate> = {
-  lembreteConsulta: {
-    subject: "Lembrete: Sua Consulta Agendada - Clínica Lavorato",
-    body: "Olá {{nome}},\n\nEste é um lembrete para sua consulta agendada para amanhã às 15:00 na Clínica Lavorato.\n\nPor favor, confirme sua presença respondendo este e-mail ou entrando em contato pelo telefone (XX) XXXX-XXXX.\n\nCaso precise reagendar, solicitamos que informe com pelo menos 4 horas de antecedência.\n\nAtenciosamente,\nEquipe Clínica Lavorato",
-  },
-  resultadoExame: {
-    subject: "Resultados de Exames Disponíveis - Clínica Lavorato",
-    body: "Olá {{nome}},\n\nInformamos que seus resultados de exames já estão disponíveis.\n\nVocê pode acessá-los pelo nosso portal usando seu CPF e data de nascimento, ou comparecer à nossa clínica com um documento de identificação.\n\nCaso tenha alguma dúvida, estamos à disposição pelos nossos canais de atendimento.\n\nAtenciosamente,\nEquipe Clínica Lavorato",
-  },
-  aniversario: {
-    subject: "Feliz Aniversário! - Clínica Lavorato",
-    body: "Olá {{nome}},\n\nA equipe da Clínica Lavorato deseja a você um Feliz Aniversário!\n\nQue este novo ciclo seja repleto de saúde, paz e realizações.\n\nAproveite seu dia especial!\n\nComo presente de aniversário, você tem direito a 10% de desconto em qualquer procedimento realizado em até 30 dias.\n\nAtenciosamente,\nEquipe Clínica Lavorato",
-  },
-  lembreteRetorno: {
-    subject: "Lembrete de Retorno - Clínica Lavorato",
-    body: "Olá {{nome}},\n\nGostaríamos de lembrá-lo(a) que já se passaram aproximadamente 6 meses desde sua última consulta.\n\nRecomendamos o agendamento de uma consulta de retorno para acompanhamento da sua saúde.\n\nPara agendar, entre em contato pelo telefone (XX) XXXX-XXXX ou responda este e-mail.\n\nSua saúde é nossa prioridade!\n\nAtenciosamente,\nEquipe Clínica Lavorato",
-  },
-  campanhaVacinacao: {
-    subject: "Campanha de Vacinação - Clínica Lavorato",
-    body: "Olá {{nome}},\n\nA Clínica Lavorato está realizando uma campanha de vacinação contra a gripe.\n\nProteja-se e a sua família agendando sua vacinação.\n\nDisponibilizamos horários especiais e preços promocionais para nossos pacientes cadastrados.\n\nPara mais informações ou agendamento, entre em contato pelo telefone (XX) XXXX-XXXX.\n\nAtenciosamente,\nEquipe Clínica Lavorato",
+  alertaGuias: {
+    subject: "Alerta: Não Recebimento das Guias - Clínica Lavorato",
+    body: "Olá {{nome}},\n\nIdentificamos que as guias referentes ao seu atendimento ainda não foram recebidas em nosso sistema.\n\nPor gentileza, verifique se houve algum problema com o envio ou se a documentação encontra-se pendente. Caso necessite de assistência, entre em contato conosco pelo e-mail guias@lavorato.com.br.\n\nAgradecemos sua atenção e colaboração.\n\nAtenciosamente,\nEquipe Clínica Lavorato",
   },
 };
 
