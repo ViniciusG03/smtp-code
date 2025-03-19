@@ -46,6 +46,11 @@ export function PatientList({
             <th
               scope="col"
               className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              Especialidades
+            </th>
+            <th
+              scope="col"
+              className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
               Ações
             </th>
           </tr>
@@ -64,6 +69,24 @@ export function PatientList({
               <td className="px-6 py-4 whitespace-nowrap">
                 <div className="text-sm text-gray-500">
                   {patient.telefone || "—"}
+                </div>
+              </td>
+              <td className="px-6 py-4">
+                <div className="text-sm text-gray-500">
+                  {patient.especialidades &&
+                  patient.especialidades.length > 0 ? (
+                    <div className="flex flex-wrap gap-1">
+                      {patient.especialidades.map((esp, index) => (
+                        <span
+                          key={index}
+                          className="inline-block bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full">
+                          {esp}
+                        </span>
+                      ))}
+                    </div>
+                  ) : (
+                    "—"
+                  )}
                 </div>
               </td>
               <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">

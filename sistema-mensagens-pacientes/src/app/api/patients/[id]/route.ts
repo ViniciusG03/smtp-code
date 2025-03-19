@@ -1,3 +1,5 @@
+// Modificar o arquivo src/app/api/patients/[id]/route.ts
+
 import { NextResponse } from "next/server";
 import {
   excluirPaciente,
@@ -26,7 +28,7 @@ export async function PUT(request: Request, { params }: RouteParams) {
     }
 
     const dados = (await request.json()) as PatientData;
-    const { nome, email, dataNascimento, telefone } = dados;
+    const { nome, email, dataNascimento, telefone, especialidades } = dados;
 
     if (!nome || !email) {
       return NextResponse.json(
@@ -40,6 +42,7 @@ export async function PUT(request: Request, { params }: RouteParams) {
       email,
       dataNascimento: dataNascimento || null,
       telefone: telefone || null,
+      especialidades: especialidades || [], // Adicionar especialidades
     });
 
     return NextResponse.json(pacienteAtualizado);

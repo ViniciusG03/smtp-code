@@ -304,5 +304,19 @@
     "dataNascimento": null,
     "telefone": null,
     "dataCadastro": "2025-03-19T16:29:36.907Z"
+  },
+  {
+    "id": "c2e2d09a-d3a0-4f1d-9f47-e93bad1ed369",
+    "nome": "Vinicius Oliveira",
+    "email": "viniciusgomes.33mes@gmail.com",
+    "dataNascimento": null,
+    "telefone": null,
+    "especialidades": [
+      "Psicoterapia",
+      "Fonoaudiologia",
+      "Terapia Ocupacional"
+    ],
+    "dataCadastro": "2025-03-19T17:08:26.046Z",
+    "dataAtualizacao": "2025-03-19T17:10:33.526Z"
   }
 ]

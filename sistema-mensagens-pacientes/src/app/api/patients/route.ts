@@ -1,3 +1,5 @@
+// Modificar o arquivo src/app/api/patients/route.ts
+
 import { NextResponse } from "next/server";
 import { carregarPacientes, criarPaciente } from "@/app/lib/db";
 
@@ -7,6 +9,7 @@ interface PatientData {
   email: string;
   dataNascimento?: string | null;
   telefone?: string | null;
+  especialidades?: string[];
 }
 
 // GET /api/patients - Obter todos os pacientes
@@ -27,7 +30,7 @@ export async function GET() {
 export async function POST(request: Request) {
   try {
     const dados = (await request.json()) as PatientData;
-    const { nome, email, dataNascimento, telefone } = dados;
+    const { nome, email, dataNascimento, telefone, especialidades } = dados;
 
     if (!nome || !email) {
       return NextResponse.json(
@@ -41,6 +44,7 @@ export async function POST(request: Request) {
       email,
       dataNascimento: dataNascimento || null,
       telefone: telefone || null,
+      especialidades: especialidades || [],
     });
 
     return NextResponse.json(novoPaciente, { status: 201 });

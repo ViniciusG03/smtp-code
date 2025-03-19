@@ -6,6 +6,7 @@ export interface PatientData {
   email: string;
   dataNascimento?: string | null;
   telefone?: string | null;
+  especialidades?: string[];
 }
 
 // Tipo para um paciente completo (com ID e metadados)
