@@ -11,7 +11,7 @@ import { carregarConfiguracao } from "@/app/api/config/email/route";
 export const modelosMensagens: Record<string, EmailTemplate> = {
   alertaGuias: {
     subject: "Alerta: Não Recebimento das Guias - Clínica Lavorato",
-    body: `Senhor(a) paciente ou responsável,\n\n Informamos que não identificamos, até o momento, o recebimento das guias de atendimento do paciente {{nome}} na(s) especialidade(s) {{especialidades}} para o mês de março/2025. \n\n Tendo em vista o cronograma a ser seguido por essa clínica, para o faturamento dos atendimentos, pedimos a gentileza de encaminhar a guia emitida pelo Fusex até 24/03/2025 para o e-mail guias@lavorato.com.br. Esclarecemos que a entrega tempestiva das guias é fundamental para garantir a continuidade dos atendimentos.\n\n Caso a guia já tenha sido encaminhada, pedimos a gentileza de informar a remessa para o e-mail guias@lavorato.com.br.\n\n Atenciosamente\nLavorato Saúde Integrada`,
+    body: `Senhor(a) paciente ou responsável,\n\n Informamos que não identificamos, até o momento, o recebimento das guias de atendimento do paciente {{nome}} na(s) especialidade(s) {{especialidades}} para o mês de Abril de 2025.\n\n Tendo em vista o cronograma a ser seguido por essa Clínica, para o faturamento dos atendimentos, pedimos a gentileza de encaminhar a guia emitida pelo Fusex até 24/04/2025 para o e-mail guias@lavorato.com.br. Esclarecemos que a entrega tempestiva das guias é fundamental para garantir a continuidade dos atendimentos.\n\n Caso a guia já tenha sido encaminhada, pedimos a gentileza de informar a remessa para o e-mail guias@lavorato.com.br.\n\n Atenciosamente\nEspaço Lavorato Psicologia Ltda.`,
   },
 };
 
