@@ -47,6 +47,7 @@ export function MessageModal({ onClose, onSend }: MessageModalProps) {
               required>
               <option value="">Selecione um modelo</option>
               <option value="alertaGuias">Alerta Guias</option>
+              <option value="alertaMedTherapy">Alerta Med</option>
             </select>
           </div>
 

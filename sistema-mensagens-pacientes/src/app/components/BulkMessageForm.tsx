@@ -41,6 +41,7 @@ export function BulkMessageForm({ onSubmit }: BulkMessageFormProps) {
           required>
           <option value="">Selecione um modelo</option>
           <option value="alertaGuias">Alerta Guias</option>
+          <option value="alertaMedTherapy">Alerta Med</option>
         </select>
       </div>
 

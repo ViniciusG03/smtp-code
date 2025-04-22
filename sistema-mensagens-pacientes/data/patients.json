@@ -194,5 +194,14 @@
       "FONOAUDIOLOGIA"
     ],
     "dataCadastro": "2025-04-16T16:00:47.875Z"
+  },
+  {
+    "id": "cf7bd3c9-4063-4c8e-b2c4-d37d550c1ca1",
+    "nome": "Desenvolvimento",
+    "email": "desenvolvimento@lavorato.com.br",
+    "dataNascimento": null,
+    "telefone": null,
+    "especialidades": [],
+    "dataCadastro": "2025-04-22T15:16:20.378Z"
   }
 ]

@@ -13,6 +13,10 @@ export const modelosMensagens: Record<string, EmailTemplate> = {
     subject: "Alerta: Não Recebimento das Guias - Clínica Lavorato",
     body: `Senhor(a) paciente ou responsável,\n\n Informamos que não identificamos, até o momento, o recebimento das guias de atendimento do paciente {{nome}} na(s) especialidade(s) {{especialidades}} para o mês de Abril de 2025.\n\n Tendo em vista o cronograma a ser seguido por essa Clínica, para o faturamento dos atendimentos, pedimos a gentileza de encaminhar a guia emitida pelo Fusex até 24/04/2025 para o e-mail guias@lavorato.com.br. Esclarecemos que a entrega tempestiva das guias é fundamental para garantir a continuidade dos atendimentos.\n\n Caso a guia já tenha sido encaminhada, pedimos a gentileza de informar a remessa para o e-mail guias@lavorato.com.br.\n\n Atenciosamente\nEspaço Lavorato Psicologia Ltda.`,
   },
+  alertaMedTherapy: {
+    subject: "Liberação de Acesso",
+    body: "Prezado(a),\n\n Informamos que a sua solicitação foi recebida e a demanda devidamente analisada por nossa equipe.\n\n O acesso será liberado no dia 23/04/10 (Quarta-Feira), das 14:00 às 23:00.\n\n Ressaltamos que, em caso de atraso no cumprimento deste prazo, será necessário realizar uma nova análise da solicitação, o que poderá impactar a liberação do acesso.\n\n Permanecemos à disposição para quaisquer dúvidas.\n\n\n Atenciosamente,\nEspaço Lavorato - Equipe de Desenvolvimento.",
+  },
 };
 
 //Configuração de e-mail
@@ -173,7 +177,7 @@ export const enviarEmail = async (
   const { cc, bcc } = obterDestinatariosCopias(nomeModelo);
 
   const opcoesEmail = {
-    from: `"Sistema de Pacientes" <${process.env.EMAIL_USER}>`,
+    from: `"Sistema de E-mails - Lavorato" <${process.env.EMAIL_USER}>`,
     to: paciente.email,
     cc,
     bcc,
