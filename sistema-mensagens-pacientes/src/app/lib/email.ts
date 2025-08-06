@@ -11,7 +11,7 @@ import { carregarConfiguracao } from "@/app/api/config/email/route";
 export const modelosMensagens: Record<string, EmailTemplate> = {
   alertaGuias: {
     subject: "Alerta: Não Recebimento das Guias - Clínica Lavorato",
-    body: `Senhor(a) paciente Fusex Típico (reabilitação)\n\nInformamos que, até o momento, não identificamos o recebimento da guia de encaminhamento referente aos atendimentos de julho. Por essa razão, solicitamos a gentileza de encaminhar a guia referente aos atendimentos de julho, já assinada (pelo gov.br ou digitalizada com assinatura manual), até 7/8/2025 (quinta-feira), para o e-mail guias@lavorato.com.br\n\nCaso a guia já tenha sido encaminhada, pedimos a gentileza de reenviá-la para o e-mail guias@lavorato.com.br ou informar a data do envio, para nova busca.\n\nEsclarecemos, por fim, que a falta de saneamento da pendência até a data indicada implicará a suspensão dos atendimentos do paciente a partir de 8/8/2025, sem novo aviso.\n\nAtenciosamente,\nEspaço Lavorato Psicologia Ltda.`,
+    body: `Senhor(a) paciente ou responsável.\n\nPensando na continuidade dos atendimentos aos pacientes, na justa remuneração da Clínica e na manutenção dos nossos profissionais, que perdem muito com pacientes que faltam ou cancelam muitas sessões, estamos instituindo política de desmarcações e desligamento de paciente (arquivo anexo).\n\nFicamos à disposição para maiores esclarecimentos pelo WhatsApp da Clínica.\n\nAtenciosamente,\nEspaço Lavorato Psicologia Ltda.`,
   },
   alertaMedTherapy: {
     subject: "Liberação para Evoluções Retroativas",
@@ -188,6 +188,12 @@ export const enviarEmail = async (
     subject: modelo.subject,
     text: corpo,
     html: corpo.replace(/\n/g, "<br>"),
+    attachments: [
+      {
+        filename: 'documento.pdf',
+        path: './src/app/assets/documento.pdf'
+      }
+    ]
   };
 
   try {
