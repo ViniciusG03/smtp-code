@@ -10,8 +10,9 @@ import { carregarConfiguracao } from "@/app/api/config/email/route";
 //Modelos de mensagens
 export const modelosMensagens: Record<string, EmailTemplate> = {
   alertaGuias: {
-    subject: "Alerta: Não Recebimento das Guias - Clínica Lavorato",
-    body: `Senhor(a) paciente ou responsável.\n\nPensando na continuidade dos atendimentos aos pacientes, na justa remuneração da Clínica e na manutenção dos nossos profissionais, que perdem muito com pacientes que faltam ou cancelam muitas sessões, estamos instituindo política de desmarcações e desligamento de paciente (arquivo anexo).\n\nFicamos à disposição para maiores esclarecimentos pelo WhatsApp da Clínica.\n\nAtenciosamente,\nEspaço Lavorato Psicologia Ltda.`,
+    subject:
+      "Fusex PNE: novo critério para solicitação de guias de encaminhamento",
+    body: `Senhor(a) paciente <strong>Fusex PNE</strong>,\n\nNo mês passado, o Fusex alterou  a forma de solicitação das guias de encaminhamento. Estabeleceu procedimento no sentido de que o paciente ou responsável deve  retirar a guia na primeira semana do mês. Hoje, fomos informados que a regra foi tornada definitiva para os pacientes da Espaço Lavorato.\n\n Por essa razão, escrevemos para orientar os pacientes Fusex PNE que, <strong>todos os meses</strong>, terão que retirar as guias de encaminhamento na <strong>primeira semana do mês</strong>. As guias obtidas pelos pacientes devem ser encaminhadas para o e-mail guias@lavorato.com.br de acordo com o calendário que divulgaremos mensalmente.\n\nDe acordo com o Ofício do Fusex, os pacientes da Lavorato devem retirar as guias de encaminhamento em 1º/9/2025. A guia deve ser encaminhada, de preferência já assinada pelo assinador gov.br, para o email guias@lavorato.com.br <strong>até 5/9/2025.</strong> No dia 6/9/2025, faremos a conferência das guias e os pacientes que não encaminharam as guias ou encaminharam guias com erros serão <strong>suspensos da agenda a partir de 8/8/2025, sem novo aviso.</strong>\n\nPedimos a gentileza de, ao receber as guias de encaminhamento, conferir todos os dados. É necessário conferir o nome do paciente, o nome do prestador (Espaço Lavorato Psicologia Ltda.), as especialidades e quantidades de sessões autorizadas e o mês de referência indicado no campo observações.\n\nGuias com erro no nome do paciente, no nome do prestador ou na indicação do mês de referência serão rejeitadas. Guias com omissão de especialidades serão atendidas apenas nas especialidades autorizadas. Guias com quantidade de atendimentos inferior à solicitada serão atendidas nas quantidades autorizadas.\n\nO paciente suspenso da agenda poderá retornar aos atendimentos, após o saneamento das pendências e de acordo com a disponibilidade de agenda. Dessa forma, a Clínica não garante que o paciente será atendido nos mesmos dias e pelos mesmos profissionais. Na verdade, não há nem mesmo garantia da vaga, porque temos fila de espera para algumas especialidades.\n\nOs pacientes <strong>Fusex PNE</strong> receberão mensagem por e-mail com tais orientações.\n\nEstamos à disposição para maiores esclarecimentos pelo WhatsApp da Clínica: (61) 3797-9004.\n\nAtenciosamente,\nValdir Lavorato\nDiretor Administrativo`,
   },
   alertaMedTherapy: {
     subject: "Liberação para Evoluções Retroativas",
@@ -19,8 +20,8 @@ export const modelosMensagens: Record<string, EmailTemplate> = {
   },
   alertaEvolucao: {
     subject: "Atualização Importante no Processo de Evoluções - MedTherapy",
-    body: "Prezados(as) Colaboradores(as),\n\nGostaríamos de comunicar uma importante atualização no procedimento para o registro de evoluções de pacientes no sistema MedTherapy, que entrará em vigor a partir do próximo dia 13 de junho de 2025. A partir desta data, a prática de liberação de pendências de evolução através de e-mail será descontinuada. Dessa forma, qualquer solicitação para regularização de evoluções fora do prazo estabelecido deverá ser tratada como um caso excepcional, sendo mediada e autorizada exclusivamente pela Dra. Simone mediante a apresentação de um documento formal assinado pela mesma. É fundamental ressaltar que o não cumprimento dos horários de registro, poderá acarretar em advertência formal. Contudo, caso a impossibilidade de registro ocorra por comprovadas falhas em serviços de terceiros, como instabilidade do sistema, internet ou falta do paciente na agenda, o fato deverá ser comunicado imediatamente à gestão para que seja considerado na análise da ocorrência.\n\n Agradecemos a compreensão e a colaboração de todos na implementação desta melhoria em nossos processos.\n\nAtenciosamente,\nEspaço Lavorato - Equipe de Desenvolvimento"
-  }
+    body: "Prezados(as) Colaboradores(as),\n\nGostaríamos de comunicar uma importante atualização no procedimento para o registro de evoluções de pacientes no sistema MedTherapy, que entrará em vigor a partir do próximo dia 13 de junho de 2025. A partir desta data, a prática de liberação de pendências de evolução através de e-mail será descontinuada. Dessa forma, qualquer solicitação para regularização de evoluções fora do prazo estabelecido deverá ser tratada como um caso excepcional, sendo mediada e autorizada exclusivamente pela Dra. Simone mediante a apresentação de um documento formal assinado pela mesma. É fundamental ressaltar que o não cumprimento dos horários de registro, poderá acarretar em advertência formal. Contudo, caso a impossibilidade de registro ocorra por comprovadas falhas em serviços de terceiros, como instabilidade do sistema, internet ou falta do paciente na agenda, o fato deverá ser comunicado imediatamente à gestão para que seja considerado na análise da ocorrência.\n\n Agradecemos a compreensão e a colaboração de todos na implementação desta melhoria em nossos processos.\n\nAtenciosamente,\nEspaço Lavorato - Equipe de Desenvolvimento",
+  },
 };
 
 //Configuração de e-mail
@@ -181,7 +182,7 @@ export const enviarEmail = async (
   const { cc, bcc } = obterDestinatariosCopias(nomeModelo);
 
   const opcoesEmail = {
-    from: `"Sistema de E-mails - Lavorato" <${process.env.EMAIL_USER}>`,
+    from: `"Lavorato" <${process.env.EMAIL_USER}>`,
     to: paciente.email,
     cc,
     bcc,
@@ -190,10 +191,10 @@ export const enviarEmail = async (
     html: corpo.replace(/\n/g, "<br>"),
     attachments: [
       {
-        filename: 'documento.pdf',
-        path: './src/app/assets/documento.pdf'
-      }
-    ]
+        filename: "Lavorato.pdf",
+        path: "./src/app/assets/Lavorato.pdf",
+      },
+    ],
   };
 
   try {
