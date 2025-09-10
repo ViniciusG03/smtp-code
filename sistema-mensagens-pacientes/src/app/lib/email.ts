@@ -6,13 +6,15 @@ import {
   EmailResultadoEmMassa,
 } from "@/app/types";
 import { carregarConfiguracao } from "@/app/api/config/email/route";
+import path from "path";
+import fs from "fs";
 
 //Modelos de mensagens
 export const modelosMensagens: Record<string, EmailTemplate> = {
   alertaGuias: {
     subject:
-      "Fusex PNE: novo critério para solicitação de guias de encaminhamento",
-    body: `Senhor(a) paciente <strong>Fusex PNE</strong>,\n\nNo mês passado, o Fusex alterou  a forma de solicitação das guias de encaminhamento. Estabeleceu procedimento no sentido de que o paciente ou responsável deve  retirar a guia na primeira semana do mês. Hoje, fomos informados que a regra foi tornada definitiva para os pacientes da Espaço Lavorato.\n\n Por essa razão, escrevemos para orientar os pacientes Fusex PNE que, <strong>todos os meses</strong>, terão que retirar as guias de encaminhamento na <strong>primeira semana do mês</strong>. As guias obtidas pelos pacientes devem ser encaminhadas para o e-mail guias@lavorato.com.br de acordo com o calendário que divulgaremos mensalmente.\n\nDe acordo com o Ofício do Fusex, os pacientes da Lavorato devem retirar as guias de encaminhamento em 1º/9/2025. A guia deve ser encaminhada, de preferência já assinada pelo assinador gov.br, para o email guias@lavorato.com.br <strong>até 5/9/2025.</strong> No dia 6/9/2025, faremos a conferência das guias e os pacientes que não encaminharam as guias ou encaminharam guias com erros serão <strong>suspensos da agenda a partir de 8/8/2025, sem novo aviso.</strong>\n\nPedimos a gentileza de, ao receber as guias de encaminhamento, conferir todos os dados. É necessário conferir o nome do paciente, o nome do prestador (Espaço Lavorato Psicologia Ltda.), as especialidades e quantidades de sessões autorizadas e o mês de referência indicado no campo observações.\n\nGuias com erro no nome do paciente, no nome do prestador ou na indicação do mês de referência serão rejeitadas. Guias com omissão de especialidades serão atendidas apenas nas especialidades autorizadas. Guias com quantidade de atendimentos inferior à solicitada serão atendidas nas quantidades autorizadas.\n\nO paciente suspenso da agenda poderá retornar aos atendimentos, após o saneamento das pendências e de acordo com a disponibilidade de agenda. Dessa forma, a Clínica não garante que o paciente será atendido nos mesmos dias e pelos mesmos profissionais. Na verdade, não há nem mesmo garantia da vaga, porque temos fila de espera para algumas especialidades.\n\nOs pacientes <strong>Fusex PNE</strong> receberão mensagem por e-mail com tais orientações.\n\nEstamos à disposição para maiores esclarecimentos pelo WhatsApp da Clínica: (61) 3797-9004.\n\nAtenciosamente,\nValdir Lavorato\nDiretor Administrativo`,
+      "IMPORTANTE: Interrupção dos atendimentos de psicopedagogia pelo Fusex",
+    body: `Senhores(as) pacientes <strong>Fusex</strong>,\n\nHoje, recebemos visita da equipe técnica do Fusex para esclarecer algumas dúvidas que havíamos suscitado.\n\nNa conversa, fomos informados que o Fusex <strong>não aceita</strong> a realização de tratamento de <strong>psicopedagogia</strong> por <strong>pedagogo com especialização em psicopedagogia</strong>, apenas por <strong>psicólogo</strong> com especialização em psicopedagogia. O Fusex esclareceu que os procedimentos realizados por pedagogo, mesmo com especialização em psicopedagogia, podem ser glosados (até mesmo os já realizados).\n\nFomos surpreendidos com a notícia, porque se trata de profissão não regulamentada e os cursos de especialização aceitam matrículas de psicólogos e pedagogos. Além disso, o projeto de Lei 1.675/2023, que visa a regulamentar a profissão de psicopedagogo, estabelece que os “formados em psicologia, <strong>pedagogia e licenciatura</strong>, que tenham concluído curso de <strong>especialização em psicopedagogia</strong>, com duração mínima de 600 horas, <strong>também poderão atuar na área</strong>”. Todavia, em razão de não haver Lei dispondo sobre o exercício da profissão, vamos seguir fielmente as orientações recebidas do Fusex.\n\nTendo em vista que não temos nenhum <strong>psicólogo</strong> com especialização em psicopedagogia em nosso quadro – todos os nossos psicopedagogos são formados em <strong>pedagogia</strong>, <strong>com especialização em psicopedagogia</strong> – somos forçados a interromper, a partir da próxima segunda-feira (1/9/2025) os atendimentos nesta modalidade <strong>para os beneficiários do Fusex.</strong>\n\nFicamos à disposição para maiores esclarecimentos pelo WhatsApp da Clínica: (61) 3797-9004.`,
   },
   alertaMedTherapy: {
     subject: "Liberação para Evoluções Retroativas",
@@ -181,6 +183,32 @@ export const enviarEmail = async (
   // Obter destinatários em cópia e cópia oculta
   const { cc, bcc } = obterDestinatariosCopias(nomeModelo);
 
+  const attachments: Array<{
+    filename: string;
+    path: string;
+  }> = [];
+
+  const arquivoPadrao = "./src/app/assets/Lavorato.pdf";
+  if (fs.existsSync(arquivoPadrao)) {
+    attachments.push({
+      filename: "Lavorato.pdf",
+      path: arquivoPadrao,
+    });
+  }
+
+  if (paciente.anexos && paciente.anexos.length > 0) {
+    paciente.anexos.forEach((caminhoAnexo) => {
+      const caminhoCompleto = path.join(process.cwd(), "uploads", caminhoAnexo);
+      if (fs.existsSync(caminhoCompleto)) {
+        const nomeArquivo = path.basename(caminhoAnexo);
+        attachments.push({
+          filename: nomeArquivo,
+          path: caminhoCompleto,
+        });
+      }
+    });
+  }
+
   const opcoesEmail = {
     from: `"Lavorato" <${process.env.EMAIL_USER}>`,
     to: paciente.email,
@@ -189,12 +217,13 @@ export const enviarEmail = async (
     subject: modelo.subject,
     text: corpo,
     html: corpo.replace(/\n/g, "<br>"),
-    attachments: [
-      {
-        filename: "Lavorato.pdf",
-        path: "./src/app/assets/Lavorato.pdf",
-      },
-    ],
+    attachments: attachments,
+    // attachments: [
+    //   {
+    //     filename: "Lavorato.pdf",
+    //     path: "./src/app/assets/Lavorato.pdf",
+    //   },
+    // ],
   };
 
   try {
