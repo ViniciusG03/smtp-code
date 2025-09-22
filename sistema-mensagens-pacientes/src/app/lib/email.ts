@@ -8,13 +8,14 @@ import {
 import { carregarConfiguracao } from "@/app/api/config/email/route";
 import path from "path";
 import fs from "fs";
+import type Mail from "nodemailer/lib/mailer";
+import type { SendMailOptions } from "nodemailer";
 
 //Modelos de mensagens
 export const modelosMensagens: Record<string, EmailTemplate> = {
   alertaGuias: {
-    subject:
-      "IMPORTANTE: Interrupção dos atendimentos de psicopedagogia pelo Fusex",
-    body: `Senhores(as) pacientes <strong>Fusex</strong>,\n\nHoje, recebemos visita da equipe técnica do Fusex para esclarecer algumas dúvidas que havíamos suscitado.\n\nNa conversa, fomos informados que o Fusex <strong>não aceita</strong> a realização de tratamento de <strong>psicopedagogia</strong> por <strong>pedagogo com especialização em psicopedagogia</strong>, apenas por <strong>psicólogo</strong> com especialização em psicopedagogia. O Fusex esclareceu que os procedimentos realizados por pedagogo, mesmo com especialização em psicopedagogia, podem ser glosados (até mesmo os já realizados).\n\nFomos surpreendidos com a notícia, porque se trata de profissão não regulamentada e os cursos de especialização aceitam matrículas de psicólogos e pedagogos. Além disso, o projeto de Lei 1.675/2023, que visa a regulamentar a profissão de psicopedagogo, estabelece que os “formados em psicologia, <strong>pedagogia e licenciatura</strong>, que tenham concluído curso de <strong>especialização em psicopedagogia</strong>, com duração mínima de 600 horas, <strong>também poderão atuar na área</strong>”. Todavia, em razão de não haver Lei dispondo sobre o exercício da profissão, vamos seguir fielmente as orientações recebidas do Fusex.\n\nTendo em vista que não temos nenhum <strong>psicólogo</strong> com especialização em psicopedagogia em nosso quadro – todos os nossos psicopedagogos são formados em <strong>pedagogia</strong>, <strong>com especialização em psicopedagogia</strong> – somos forçados a interromper, a partir da próxima segunda-feira (1/9/2025) os atendimentos nesta modalidade <strong>para os beneficiários do Fusex.</strong>\n\nFicamos à disposição para maiores esclarecimentos pelo WhatsApp da Clínica: (61) 3797-9004.`,
+    subject: "Atendimento em psicopedagogia",
+    body: `Prezado(a) paciente Fusex,\n\nEm 29/8/2025, fomos informados pelo Fusex que os atendimentos em <strong>psicopedagogia</strong> realizados por  <strong>pedagogo</strong> com especialização em <strong>psicopedagogia não são cobertos</strong> pelo Fusex. Apenas os atendimentos realizados por <strong>psicólogo</strong>, com especialização em psicopedagogia têm cobertura pelo Fusex.\n\nTendo em vista a restrição e que não tínhamos psicólogo com esta especialização, o Fusex autorizou a manutenção dos atendimentos pelos profissionais que temos no quadro de colaboradores. Na ocasião, informamos a dificuldade em recrutar <strong>psicólogo</strong> com <strong>especialização</strong> em <strong>psicopedagogia</strong>, sobretudo em razão do valor oferecido pelo Fusex. De qualquer sorte, ficou ajustado que a Lavorato encaminharia uma proposta de atendimentos para solução do impasse.\n\nPara superar a dificuldade, contratamos um psicólogo com  <strong>especialização</strong> em <strong>psicopedagogia</strong> para atuar na <strong><u>supervisão</u></strong> dos atendimentos prestados pelos psicopedagogos com formação na área de educação e assumir a <strong>responsabilidade técnica</strong> do setor.\n\nEncaminhamos proposta de atendimento ao Fusex, por e-mail, e estamos aguardando a resposta. Na mensagem eletrônica encaminhada, esclarecemos que a falta de resposta até 30/9/2025 será interpretada como “<i>rejeição à proposta</i>”\n\nAssim, em razão da proximidade do prazo para a tomada de decisão, informamos a situação aos pacientes e responsáveis, para que não sejam surpreendidos com <b>eventual encerramento dos atendimentos</b> em psicopedagogia a partir de 1º/10/2025.\n\nAtenciosamente,\nValdir Lavorato\nDiretor-administrativo`,
   },
   alertaMedTherapy: {
     subject: "Liberação para Evoluções Retroativas",
@@ -23,6 +24,24 @@ export const modelosMensagens: Record<string, EmailTemplate> = {
   alertaEvolucao: {
     subject: "Atualização Importante no Processo de Evoluções - MedTherapy",
     body: "Prezados(as) Colaboradores(as),\n\nGostaríamos de comunicar uma importante atualização no procedimento para o registro de evoluções de pacientes no sistema MedTherapy, que entrará em vigor a partir do próximo dia 13 de junho de 2025. A partir desta data, a prática de liberação de pendências de evolução através de e-mail será descontinuada. Dessa forma, qualquer solicitação para regularização de evoluções fora do prazo estabelecido deverá ser tratada como um caso excepcional, sendo mediada e autorizada exclusivamente pela Dra. Simone mediante a apresentação de um documento formal assinado pela mesma. É fundamental ressaltar que o não cumprimento dos horários de registro, poderá acarretar em advertência formal. Contudo, caso a impossibilidade de registro ocorra por comprovadas falhas em serviços de terceiros, como instabilidade do sistema, internet ou falta do paciente na agenda, o fato deverá ser comunicado imediatamente à gestão para que seja considerado na análise da ocorrência.\n\n Agradecemos a compreensão e a colaboração de todos na implementação desta melhoria em nossos processos.\n\nAtenciosamente,\nEspaço Lavorato - Equipe de Desenvolvimento",
+  },
+  alertaHipo: {
+    subject: "Acesso Hipo Saúde",
+    body: "Prezado(a) {{nome}},\n\nEstamos entrando em contato para informar que o seu acesso a plataforma Hipo Saúde foi criado com sucesso. Abaixo estão os detalhes para o seu login:\n\nLink de acesso: http://56.124.35.86:8080/\nUsuário: {primeiro_nome}.{ultimo_nome}\nSenha temporária: LAVORATO@2025\n\nPor favor, ao acessar a plataforma pela primeira vez, utilize a senha temporária fornecida acima. A alteração acontece após o primeiro login. Segue também o manual de utilização da plataforma em anexo.\n\nCaso tenha alguma dúvida ou necessite de assistência, não hesite em entrar em contato conosco.\n\nAtenciosamente,\nVinicius Oliveira,\n(61) 99412-8831",
+  },
+  neuronupParceria: {
+    subject: "Lavorato + NeuronUP: treino cognitivo e reabilitação",
+    body: `<img src="cid:neuronup-hero" alt="Lavorato + NeuronUP" style="max-width:100%;height:auto;border-radius:8px;"><br><br>
+Quero compartilhar uma grande inovação da Lavorato. Fechamos parceria com a <strong>NeuronUP</strong>, empresa espanhola que também é parceira do <strong>Hospital Israelita Albert Einstein</strong>, <strong>Hospital das Clínicas</strong>, <strong>Centro de Reabilitação Lucy Montoro</strong> e outros gigantes da saúde.
+<br><br>
+Esse programa parte da premissa de <strong>NEUROPLASTICIDADE</strong>, que é o potencial que o cérebro tem de se modificar e se adaptar em resposta à experiência, a substâncias químicas, hormônios ou lesões. Essa capacidade do cérebro de se reorganizar, criando e fortalecendo conexões neuronais, é a <strong>chave para a recuperação</strong>. Embora o próprio sistema seja capaz de ativar os sistemas neuroplásticos, esses têm limites; por isso, é necessário <strong>estimulá-los e modulá-los</strong>, o que é alcançado por meio de uma <strong>intervenção terapêutica adequada</strong>.
+<br><br>
+A partir de <strong>outubro</strong> teremos essas ferramentas para trabalhar <strong>treino cognitivo</strong> e <strong>reabilitação neuropsicológica</strong> aqui na Lavorato. O programa atende <strong>diferentes idades</strong>, com atividades adequadas a cada <strong>faixa etária</strong> e <strong>necessidade</strong>.
+<br><br>
+Entre em contato para saber mais e participar desse programa inovador, já com <strong>comprovação científica</strong> da sua eficácia.
+<br><br>
+Atenciosamente,<br>
+Lavorato Saúde Integrada`,
   },
 };
 
@@ -183,18 +202,34 @@ export const enviarEmail = async (
   // Obter destinatários em cópia e cópia oculta
   const { cc, bcc } = obterDestinatariosCopias(nomeModelo);
 
-  const attachments: Array<{
-    filename: string;
-    path: string;
-  }> = [];
+  // const attachments: Array<{
+  //   filename: string;
+  //   path: string;
+  // }> = [];
 
-  const arquivoPadrao = "./src/app/assets/Lavorato.pdf";
-  if (fs.existsSync(arquivoPadrao)) {
-    attachments.push({
-      filename: "Lavorato.pdf",
-      path: arquivoPadrao,
-    });
+  const attachments: Mail.Attachment[] = [];
+
+  if (nomeModelo === "neuronupParceria") {
+    const bannerPath = path.join(process.cwd(), "uploads", "NeuronUp.jpg");
+    if (fs.existsSync(bannerPath)) {
+      attachments.push({
+        filename: "NeuronUP.jpg",
+        path: bannerPath,
+        cid: "neuronup-hero", // Content-ID para usar em <img src="cid:neuronup-hero">
+        contentDisposition: "inline",
+      });
+    } else {
+      console.warn("Banner NeuronUP não encontrado em:", bannerPath);
+    }
   }
+
+  // const arquivoPadrao = "./src/app/assets/oficio_fusex.pdf";
+  // if (fs.existsSync(arquivoPadrao)) {
+  //   attachments.push({
+  //     filename: "oficio_fusex.pdf",
+  //     path: arquivoPadrao,
+  //   });
+  // }
 
   if (paciente.anexos && paciente.anexos.length > 0) {
     paciente.anexos.forEach((caminhoAnexo) => {
@@ -217,13 +252,7 @@ export const enviarEmail = async (
     subject: modelo.subject,
     text: corpo,
     html: corpo.replace(/\n/g, "<br>"),
-    attachments: attachments,
-    // attachments: [
-    //   {
-    //     filename: "Lavorato.pdf",
-    //     path: "./src/app/assets/Lavorato.pdf",
-    //   },
-    // ],
+    attachments,
   };
 
   try {
