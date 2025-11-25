@@ -45,6 +45,8 @@ export function BulkMessageForm({ onSubmit }: BulkMessageFormProps) {
           <option value="alertaEvolucao">Alerta Evolucao</option>
           <option value="alertaHipo">Alerta Hipo</option>
           <option value="neuronupParceria">Neuronup Parceria</option>
+          <option value="coloniaFerias">Colônia de Férias</option>
+          <option value="recadastramento">Recadastramento</option>
         </select>
       </div>
 
