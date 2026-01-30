@@ -47,6 +47,9 @@ export function BulkMessageForm({ onSubmit }: BulkMessageFormProps) {
           <option value="neuronupParceria">Neuronup Parceria</option>
           <option value="coloniaFerias">Colônia de Férias</option>
           <option value="recadastramento">Recadastramento</option>
+          <option value="emailNovaFuncionalidade">Nova Funcionalidade</option>
+          <option value="alertaAssinaturas">Alerta Assinaturas</option>
+          <option value="conviteBetaApp">Convite Beta App</option>
         </select>
       </div>
 
