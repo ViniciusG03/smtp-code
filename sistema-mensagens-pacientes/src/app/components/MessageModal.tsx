@@ -58,6 +58,7 @@ export function MessageModal({ onClose, onSend }: MessageModalProps) {
               </option>
               <option value="alertaAssinaturas">Alerta Assinaturas</option>
               <option value="conviteBetaApp">Convite Beta App</option>
+              <option value="regraCondutas">Regra de Condutas</option>
             </select>
           </div>
 

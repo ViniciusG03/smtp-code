@@ -50,6 +50,7 @@ export function BulkMessageForm({ onSubmit }: BulkMessageFormProps) {
           <option value="emailNovaFuncionalidade">Nova Funcionalidade</option>
           <option value="alertaAssinaturas">Alerta Assinaturas</option>
           <option value="conviteBetaApp">Convite Beta App</option>
+          <option value="regraCondutas">Regra de Condutas</option>
         </select>
       </div>
 
