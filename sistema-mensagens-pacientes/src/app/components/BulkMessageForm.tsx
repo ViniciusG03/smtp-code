@@ -40,17 +40,12 @@ export function BulkMessageForm({ onSubmit }: BulkMessageFormProps) {
           className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-yellow-500 focus:border-yellow-500"
           required>
           <option value="">Selecione um modelo</option>
-          <option value="alertaGuias">Alerta Guias</option>
-          <option value="alertaMedTherapy">Alerta Med</option>
-          <option value="alertaEvolucao">Alerta Evolucao</option>
           <option value="alertaHipo">Alerta Hipo</option>
           <option value="neuronupParceria">Neuronup Parceria</option>
-          <option value="coloniaFerias">Colônia de Férias</option>
           <option value="recadastramento">Recadastramento</option>
-          <option value="emailNovaFuncionalidade">Nova Funcionalidade</option>
-          <option value="alertaAssinaturas">Alerta Assinaturas</option>
           <option value="conviteBetaApp">Convite Beta App</option>
           <option value="regraCondutas">Regra de Condutas</option>
+          <option value="calendarioFeriados">Calendário de Feriados</option>
         </select>
       </div>
 
