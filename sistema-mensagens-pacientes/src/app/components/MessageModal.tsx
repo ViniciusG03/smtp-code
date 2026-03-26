@@ -52,6 +52,7 @@ export function MessageModal({ onClose, onSend }: MessageModalProps) {
               <option value="conviteBetaApp">Convite Beta App</option>
               <option value="regraCondutas">Regra de Condutas</option>
               <option value="calendarioFeriados">Calendário de Feriados</option>
+              <option value="palestraAutismo">Palestra</option>
             </select>
           </div>
 
