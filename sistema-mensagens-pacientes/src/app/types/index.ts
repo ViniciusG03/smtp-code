@@ -8,6 +8,7 @@ export interface PatientData {
   telefone?: string | null;
   especialidades?: string[];
   anexos?: string[];
+  convenio?: string | null;
 }
 
 // Tipo para um paciente completo (com ID e metadados)
@@ -15,6 +16,7 @@ export interface Patient extends PatientData {
   id: string;
   dataCadastro: string;
   dataAtualizacao?: string;
+  permitirEmailDuplicado?: boolean;
 }
 
 // Tipo para informações de alerta

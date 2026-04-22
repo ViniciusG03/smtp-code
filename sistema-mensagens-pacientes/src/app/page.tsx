@@ -219,21 +219,30 @@ export default function Home() {
         <h1 className="text-3xl font-bold mb-8 text-blue-800">
           Sistema de Mensagens para Pacientes
         </h1>
-        <Link
-          href="/config/email"
-          className="text-blue-600 hover:text-blue-800 text-sm font-medium bg-white py-2 px-4 rounded shadow">
-          Configurações de Email
-        </Link>
+        <div className="flex gap-3 mb-6">
+          <Link
+            href="/config/email"
+            className="text-blue-600 hover:text-blue-800 text-sm font-medium bg-white py-2 px-4 rounded shadow">
+            Configurações de Email
+          </Link>
+          <Link
+            href="/relatorios"
+            className="text-white bg-blue-500 hover:bg-blue-700 text-sm font-medium py-2 px-4 rounded shadow">
+            Relatórios de Convênio
+          </Link>
+        </div>
 
         {/* Componente de alerta */}
         {infoAlerta && (
           <div
-            className={`mb-4 p-4 rounded ${
+            className={`fixed bottom-4 right-4 z-50 px-4 py-2 rounded shadow-md text-sm ${
               infoAlerta.tipo === "sucesso"
-                ? "bg-green-100 text-green-800"
+                ? "bg-green-50 text-green-700 border border-green-200"
                 : infoAlerta.tipo === "erro"
-                ? "bg-red-100 text-red-800"
-                : "bg-blue-100 text-blue-800"
+                ? "bg-red-50 text-red-700 border border-red-200"
+                : infoAlerta.tipo === "aviso"
+                ? "bg-yellow-50 text-yellow-700 border border-yellow-200"
+                : "bg-blue-50 text-blue-700 border border-blue-200"
             }`}>
             {infoAlerta.mensagem}
           </div>

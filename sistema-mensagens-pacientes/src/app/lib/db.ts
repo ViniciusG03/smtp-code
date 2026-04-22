@@ -88,7 +88,11 @@ export const obterPacientePorId = (id: string): Patient | null => {
 export const criarPaciente = (dadosPaciente: PatientData): Patient => {
   const pacientes = carregarPacientes();
 
-  if (pacientes.some((p) => p.email === dadosPaciente.email)) {
+  // Bloqueia duplicidade apenas se nenhum paciente com esse email permitiu compartilhamento
+  const emailEmUso = pacientes.some(
+    (p) => p.email === dadosPaciente.email && !p.permitirEmailDuplicado
+  );
+  if (emailEmUso) {
     throw new Error("Este e-mail já está cadastrado");
   }
 
@@ -119,11 +123,16 @@ export const atualizarPaciente = (
     throw new Error("Paciente não encontrado.");
   }
 
-  //Verificar se o email já está em uso por outro paciente
+  //Verificar se o email já está em uso por outro paciente (sem permissão de duplicidade)
   if (
     dadosPaciente.email &&
     dadosPaciente.email !== pacientes[indice].email &&
-    pacientes.some((p) => p.id !== id && p.email === dadosPaciente.email)
+    pacientes.some(
+      (p) =>
+        p.id !== id &&
+        p.email === dadosPaciente.email &&
+        !p.permitirEmailDuplicado
+    )
   ) {
     throw new Error("O email informado já está cadastrado.");
   }
@@ -131,6 +140,28 @@ export const atualizarPaciente = (
   pacientes[indice] = {
     ...pacientes[indice],
     ...dadosPaciente,
+    dataAtualizacao: new Date().toISOString(),
+  };
+
+  if (salvarPacientes(pacientes)) {
+    return pacientes[indice];
+  } else {
+    throw new Error("Erro ao salvar o paciente.");
+  }
+};
+
+// Alternar permissão de email duplicado para um paciente
+export const togglePermitirEmailDuplicado = (id: string): Patient => {
+  const pacientes = carregarPacientes();
+  const indice = pacientes.findIndex((p) => p.id === id);
+
+  if (indice === -1) {
+    throw new Error("Paciente não encontrado.");
+  }
+
+  pacientes[indice] = {
+    ...pacientes[indice],
+    permitirEmailDuplicado: !pacientes[indice].permitirEmailDuplicado,
     dataAtualizacao: new Date().toISOString(),
   };
 

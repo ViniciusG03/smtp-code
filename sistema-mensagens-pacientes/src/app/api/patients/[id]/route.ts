@@ -3,6 +3,7 @@ import {
   obterPacientePorId,
   atualizarPaciente,
   excluirPaciente,
+  togglePermitirEmailDuplicado,
 } from "@/app/lib/db";
 import { PatientData } from "@/app/types";
 
@@ -80,6 +81,30 @@ export async function PUT(
 
     if (erro.message === "O email informado já está cadastrado.") {
       return NextResponse.json({ error: erro.message }, { status: 409 });
+    }
+
+    return NextResponse.json(
+      { error: "Erro interno do servidor" },
+      { status: 500 }
+    );
+  }
+}
+
+// PATCH /api/patients/[id] - Alternar permissão de email duplicado
+export async function PATCH(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const { id } = await params;
+    const pacienteAtualizado = togglePermitirEmailDuplicado(id);
+
+    return NextResponse.json(pacienteAtualizado);
+  } catch (erro: any) {
+    console.error("Erro ao alternar permissão de email:", erro);
+
+    if (erro.message === "Paciente não encontrado.") {
+      return NextResponse.json({ error: erro.message }, { status: 404 });
     }
 
     return NextResponse.json(

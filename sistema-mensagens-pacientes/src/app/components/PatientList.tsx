@@ -87,6 +87,34 @@ export const PatientList = ({
   const [expandedAttachments, setExpandedAttachments] = useState<Set<string>>(
     new Set()
   );
+  const [emailDuplicadoMap, setEmailDuplicadoMap] = useState<
+    Record<string, boolean>
+  >(() =>
+    patients.reduce(
+      (acc, p) => ({ ...acc, [p.id]: p.permitirEmailDuplicado ?? false }),
+      {}
+    )
+  );
+  const [togglingId, setTogglingId] = useState<string | null>(null);
+
+  const handleToggleEmailDuplicado = async (patientId: string) => {
+    setTogglingId(patientId);
+    try {
+      const resposta = await fetch(`/api/patients/${patientId}`, {
+        method: "PATCH",
+      });
+      if (!resposta.ok) throw new Error("Erro ao alternar permissão");
+      const atualizado = await resposta.json();
+      setEmailDuplicadoMap((prev) => ({
+        ...prev,
+        [patientId]: atualizado.permitirEmailDuplicado ?? false,
+      }));
+    } catch (erro) {
+      console.error(erro);
+    } finally {
+      setTogglingId(null);
+    }
+  };
 
   const toggleAttachments = (patientId: string) => {
     const newExpanded = new Set(expandedAttachments);
@@ -152,6 +180,30 @@ export const PatientList = ({
                 🗑️ Excluir
               </button>
             </div>
+          </div>
+
+          {/* Toggle de email duplicado */}
+          <div className="flex items-center gap-2 mb-3">
+            <button
+              onClick={() => handleToggleEmailDuplicado(patient.id)}
+              disabled={togglingId === patient.id}
+              className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 disabled:opacity-50 ${
+                emailDuplicadoMap[patient.id]
+                  ? "bg-green-500"
+                  : "bg-gray-300"
+              }`}
+              title="Permitir que este email seja usado em outro cadastro">
+              <span
+                className={`inline-block h-3.5 w-3.5 transform rounded-full bg-white shadow transition-transform ${
+                  emailDuplicadoMap[patient.id]
+                    ? "translate-x-4"
+                    : "translate-x-0.5"
+                }`}
+              />
+            </button>
+            <span className="text-xs font-medium text-gray-500 uppercase tracking-wide">
+              Duplicar Email
+            </span>
           </div>
 
           {/* Informações adicionais */}
